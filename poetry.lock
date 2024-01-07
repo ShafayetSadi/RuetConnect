@@ -27,6 +27,18 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-browser-reload"
+version = "1.12.1"
+description = "Automatically reload your browser in development."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+asgiref = ">=3.6"
+Django = ">=3.2"
+
+[[package]]
 name = "django-htmx"
 version = "1.17.2"
 description = "Extensions for using Django with htmx."
@@ -48,6 +60,7 @@ python-versions = ">=3.10.0,<4.0.0"
 
 [package.dependencies]
 django = ">=3.2.14"
+django-browser-reload = {version = ">=1.12.1,<2.0.0", optional = true, markers = "extra == \"reload\""}
 
 [package.extras]
 reload = ["django-browser-reload (>=1.12.1,<2.0.0)"]
@@ -137,7 +150,7 @@ python-versions = ">=2"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.12"
-content-hash = "e3dea4219fbe56e55a97824ea2ef4e8a0c4481da88bafb310a9dc4f5aadbd545"
+content-hash = "0050f8b09275eebfb06da6766c282ebb82761546f7749a452c26c02db48869a8"
 
 [metadata.files]
 asgiref = [
@@ -147,6 +160,10 @@ asgiref = [
 Django = [
     {file = "Django-5.0.1-py3-none-any.whl", hash = "sha256:f47a37a90b9bbe2c8ec360235192c7fddfdc832206fcf618bb849b39256affc1"},
     {file = "Django-5.0.1.tar.gz", hash = "sha256:8c8659665bc6e3a44fefe1ab0a291e5a3fb3979f9a8230be29de975e57e8f854"},
+]
+django-browser-reload = [
+    {file = "django-browser-reload-1.12.1.tar.gz", hash = "sha256:875b6bd01db13380522ccb4ae75871a2edeae74bb5ac92bf32eb76763d575d86"},
+    {file = "django_browser_reload-1.12.1-py3-none-any.whl", hash = "sha256:08b457f1b6599bf782d4d2ecdfb0897d6fc936ac4035060d0269c2af5ef4ef7a"},
 ]
 django-htmx = [
     {file = "django-htmx-1.17.2.tar.gz", hash = "sha256:4089f2ed38727e9846c2f4cd1daddf6b010c7be8d834cfbcffc8c5ecf445c04e"},

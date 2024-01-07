@@ -1,11 +1,25 @@
+{% load static tailwind_tags %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"
+      x-data="{ theme: localStorage.getItem('theme') || 'dark' }"
+      :data-theme="theme"
+>
 <head>
     <meta charset="UTF-8">
-    <title>CampusConnect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} CampusConnect {% endblock %}</title>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {% tailwind_preload_css %}
+    {% tailwind_css %}
 </head>
-<body>
-    {% block content %}
-    {% endblock %}
+<body class="bg-background text-foreground">
+    {% include 'campus/header.html' %}
+    <div class="flex flex-col items-center justify-center">
+        <div class="mt-16">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
 </body>
 </html>
