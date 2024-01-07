@@ -1,0 +1,19 @@
+{% load widget_tweaks %}
+{% if form.non_field_errors %}
+    <div class="">
+        {% for error in form.non_field_errors %}
+            {{ error }}
+        {% endfor %}
+    </div>
+{% endif %}
+{% for field in form %}
+    <label for="{{ field.id_for_label }}" class="text">
+        {{ field.label }} {% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+    </label>
+    {% render_field field class="input" %}
+    {% if field.errors %}
+        <div class="p-2 border-2 border-red-900 rounded-xl m-2 text-center">
+            {{ field.errors }}
+        </div>
+    {% endif %}
+{% endfor %}

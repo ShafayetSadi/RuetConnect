@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "tailwind",
     "theme",
     "django_browser_reload",
+    "widget_tweaks",
 ]
 
 MIDDLEWARE = [
@@ -130,4 +131,7 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 NPM_BIN_PATH = r'C:\Program Files\nodejs\npm.cmd'
+
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 

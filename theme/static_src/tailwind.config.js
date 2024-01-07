@@ -59,6 +59,9 @@ module.exports = {
                 'ring': 'var(--ring)',
                 'radius': '0.5rem',
             },
+            fontFamily: {
+                geist: ['Geist', 'sans-serif'],
+            },
         },
     },
     plugins: [

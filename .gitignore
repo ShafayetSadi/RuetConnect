@@ -220,3 +220,4 @@ venv/
 
 # pytest
 .pytest_cache/
+/node_modules/
