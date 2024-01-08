@@ -39,4 +39,4 @@ def login(request):
 
 def logout(request):
     auth_logout(request)
-    return redirect('campus-home')
+    return render(request, 'users/logout.html')

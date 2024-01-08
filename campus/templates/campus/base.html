@@ -1,5 +1,5 @@
 {% load static tailwind_tags %}
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en"
       x-data="{ theme: localStorage.getItem('theme') || 'dark' }"
@@ -11,10 +11,30 @@
     <title>{% block title %} CampusConnect {% endblock %}</title>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="{% static 'htmx.min.js' %}" defer></script>
     {% tailwind_preload_css %}
     {% tailwind_css %}
+
+    {% block head %}
+    {% endblock %}
+
+    <script>
+        (function () {
+            let theme = localStorage.getItem("theme");
+            if (theme === "dark" || theme === "light") {
+              document.documentElement.setAttribute("data-theme", theme);
+            }
+            else {
+              localStorage.setItem("theme", "dark");
+              document.documentElement.setAttribute("data-theme", "dark");
+            }
+        })();
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
-<body class="bg-background text-foreground font-geist">
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' class="bg-background text-foreground font-geist">
     {% include 'campus/header.html' %}
     <div class="flex flex-col items-center justify-center">
         <div class="mt-16">
@@ -24,8 +44,13 @@
                     {{ message }}
                 </div>
             {% endif %}
+            <div id="search-results" class="bg-card">
+            </div>
             {% block content %}{% endblock %}
         </div>
     </div>
+
+    {% block scripts %}
+    {% endblock %}
 </body>
 </html>

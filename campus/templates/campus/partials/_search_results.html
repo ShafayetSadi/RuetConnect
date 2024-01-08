@@ -1,0 +1,6 @@
+{% for post in posts %}
+    <p> {{ post.title }} </p>
+    <p> {{ post.author }} </p>
+{% empty %}
+    <p> No posts found. </p>
+{% endfor %}

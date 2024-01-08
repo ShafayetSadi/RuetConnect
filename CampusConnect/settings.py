@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     "theme",
     "django_browser_reload",
     "widget_tweaks",
+    'django_htmx',
+    'template_partials',
 ]
 
 MIDDLEWARE = [
@@ -46,7 +48,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware'
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = 'CampusConnect.urls'
@@ -117,6 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -132,6 +136,7 @@ INTERNAL_IPS = [
 ]
 NPM_BIN_PATH = r'C:\Program Files\nodejs\npm.cmd'
 
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
