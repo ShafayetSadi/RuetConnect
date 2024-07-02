@@ -1,0 +1,71 @@
+{% load static %}
+{% load humanize %}
+<div class="m-4 bg-[--card] rounded-md px-4 py-2">
+
+    <!-- Post Header -->
+    <div class="flex gap-1 text-sm">
+        <a href="">
+            <img class="w-8 rounded-full" src=""/>
+        </a>
+        <a class="font-light px-2" href="">r/Thread</a>
+        <span class="">•</span>
+        <span class="font-extralight">Posted by</span>
+        <div class="">
+            <div>
+                <a>u/{{ post.author }}</a>
+            </div>
+        </div>
+        <span>{{ post.date_posted | naturaltime }}</span>
+    </div>
+
+    <!-- Post -->
+    <div class="">
+        <!-- Post Title -->
+        <div class="">
+            <a href="">
+                <h2 class="py-2 text-xl font-semibold">
+                    {{ post.title }}
+                </h2>
+            </a>
+            <hr class="bg-[--muted] text-[--muted] h-[1px] border-none"/>
+        </div>
+        <!-- Post Content -->
+        <div class="">
+            <a>
+                <div id="post-content"
+                     class="prose max-w-none prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-headings::font-bold prose-headings:mt-0 prose-headings:mb-4">
+                    {{ post.content|safe }}
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Post Action Buttons -->
+    <div class="flex justify-between items-center text-muted-foreground font-bold">
+        <div>
+            <a href="{% url 'post-detail' post.id %}">
+                <button class="btn btn-outline">
+                    <span>{{ post.comments.count }} comments</span>
+                </button>
+            </a
+            >
+        </div>
+        <div>
+            <a href="{% url 'post-detail' post.id %}">
+                <button class="btn btn-outline">
+                    Share
+                </button>
+            </a
+            >
+        </div>
+        <div>
+            {% if post.author == user %}
+                <a href="{% url 'post-update' post.id %}">
+                    <button class="btn btn-outline">
+                        Edit
+                    </button>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>

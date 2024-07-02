@@ -7,7 +7,9 @@ from posts.models import Post
 
 
 def home(request):
-    return render(request, 'campus/home.html')
+    posts = Post.objects.all().order_by('-date_posted')
+    context = {'posts': posts}
+    return render(request, 'campus/home.html', context)
 
 
 def about(request):

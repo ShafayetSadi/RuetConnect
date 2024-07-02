@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
     'django_htmx',
     'template_partials',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
