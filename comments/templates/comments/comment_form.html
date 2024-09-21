@@ -1,0 +1,8 @@
+<form action="{% url 'comment-create' post.slug %}" method="post">
+    {% csrf_token %}
+    <div class="flex flex-col gap-2">
+        <label for="comment" class="text-lg">Comment</label>
+        <textarea required name="content" id="comment" cols="30" rows="4" class="textarea" placeholder="Write your thoughts..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-4">Submit</button>
+</form>

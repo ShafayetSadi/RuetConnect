@@ -38,5 +38,11 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
             return True
         return False
 
+
 class PostDetailView(DetailView):
     model = Post
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.all().order_by('-date_posted')
+        return context

@@ -1,0 +1,102 @@
+{% load static %}
+<div class="px-2 pt-2">
+    <nav class="box-border flex flex-col mt-0 mb-0 w-full">
+        <div class="mx-2 my-4  bg-background rounded-xl border border-border shadow-sm">
+            <ul>
+                <li class="hover:bg-secondary bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 1024 1024">
+                        <path fill="currentColor"
+                              d="M946.5 505L534.6 93.4a31.93 31.93 0 0 0-45.2 0L77.5 505c-12 12-18.8 28.3-18.8 45.3c0 35.3 28.7 64 64 64h43.4V908c0 17.7 14.3 32 32 32H448V716h112v224h265.9c17.7 0 32-14.3 32-32V614.3h43.4c17 0 33.3-6.7 45.3-18.8c24.9-25 24.9-65.5-.1-90.5"/>
+                    </svg>
+                    <span class="">Home</span>
+                </li>
+
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 20 20">
+                        <path fill="currentColor"
+                              d="M14 2.75a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-.69l-4.47 4.47a.75.75 0 0 1-1.06 0L8.5 6.56l-4.22 4.22a.75.75 0 1 1-1.06-1.06l4.75-4.75a.75.75 0 0 1 1.06 0l2.47 2.47l3.94-3.94h-.69a.75.75 0 0 1-.75-.75M3.75 14a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 .75-.75m4.75-2.25a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0zM11.75 13a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5a.75.75 0 0 1 .75-.75m4.75-3.25a.75.75 0 0 0-1.5 0v7.5a.75.75 0 0 0 1.5 0z"/>
+                    </svg>
+                    <span class="">Popular</span>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                              d="M1.75 13.05q-.3-.3-.288-.7t.313-.7q.3-.275.7-.288t.7.288l3.55 3.55l.35.35l.35.35q.3.3.288.7t-.313.7q-.3.275-.7.288T6 17.3zm10.6 2.125l8.5-8.5q.3-.3.7-.287t.7.312q.275.3.288.7t-.288.7l-9.2 9.2q-.3.3-.7.3t-.7-.3L7.4 13.05q-.275-.275-.275-.687t.275-.713q.3-.3.713-.3t.712.3zm4.225-7.05L13.05 11.65q-.275.275-.687.275t-.713-.275q-.3-.3-.3-.712t.3-.713L15.175 6.7q.275-.275.688-.275t.712.275q.3.3.3.712t-.3.713"/>
+                    </svg>
+                    <span class="">All</span>
+                </li>
+            </ul>
+        </div>
+        <hr class="mx-2 bg-[--muted] text-[--muted] h-[1.5px] border-none"/>
+        <div class="pt-2">
+            <h3 class="text-muted-foreground px-4 font-thin">RECENT</h3>
+            <ul class="mx-2 my-4 bg-background rounded-xl border border-border">
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/golang</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/python</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/javascript</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/rust</a>
+                </li>
+            </ul>
+        </div>
+        <hr class="mx-2 bg-[--muted] text-[--muted] h-[1.5px] border-none"/>
+        <div class="pt-4">
+            <h3 class="text-muted-foreground px-4 font-thin">COMMUNITIES</h3>
+            <ul class="mx-2 my-4 bg-background rounded-xl border border-border">
+                <li class="hover:bg-secondary rounded-lg px-4 py-2">
+                    <a href="{% url 'thread-create' %}" class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 256 256">
+                        <path fill="currentColor"
+                              d="M224 128a8 8 0 0 1-8 8h-80v80a8 8 0 0 1-16 0v-80H40a8 8 0 0 1 0-16h80V40a8 8 0 0 1 16 0v80h80a8 8 0 0 1 8 8"/>
+                    </svg>
+
+                    <span class="font-semibold">Create a community</span>
+                    </a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/programming</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/linux</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/opensource</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/technology</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/programmingtools</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/programminghumor</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/learnpython</a>
+                </li>
+                <li class="hover:bg-secondary rounded-lg px-4 py-2 flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}"/>
+                    <a class="" href="">r/cs</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <hr class="mx-2 bg-[--muted] text-[--muted] h-[2px] border-none"/>
+</div>
