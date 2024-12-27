@@ -24,7 +24,6 @@ class User(AbstractUser, PermissionsMixin):
         ],
     )
 
-    # user_type = models.PositiveSmallIntegerField(default=3)
 
     REQUIRED_FIELDS = ['email']
 
