@@ -24,8 +24,7 @@ def search(request):
             posts = Post.objects.filter(title__icontains=query)
             context = {'posts': posts}
             return render(request, 'campus/partials/_search_results.html', context)
-        else:
-            print("No query")
+        print("No query")
     else:
         print("Not htmx")
     return render(request, 'campus/home.html')
