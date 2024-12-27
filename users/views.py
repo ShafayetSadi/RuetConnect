@@ -30,8 +30,7 @@ def login(request):
             user = form.get_user()
             auth_login(request, user)
             return redirect('campus-home')
-        else:
-            messages.error(request, 'Username or password is incorrect')
+        messages.error(request, 'Username or password is incorrect')
     else:
         form = AuthenticationForm()
     context = {'form': form}
