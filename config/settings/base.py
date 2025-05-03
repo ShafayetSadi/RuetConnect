@@ -28,12 +28,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Project Apps
-    "campus.apps.CampusConfig",
-    "users.apps.UsersConfig",
-    "threads.apps.ThreadsConfig",
-    "posts.apps.PostsConfig",
-    "comments.apps.CommentsConfig",
-    "votes.apps.VotesConfig",
+    "apps.campus",
+    "apps.users",
+    "apps.threads",
+    "apps.posts",
+    "apps.comments",
+    "apps.votes",
 
     # Third Party Apps
     "django_tailwind_cli",
@@ -56,7 +56,7 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
 ]
 
-ROOT_URLCONF = 'CampusConnect.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -75,7 +75,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'CampusConnect.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database

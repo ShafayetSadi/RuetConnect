@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.shortcuts import render, redirect
 
-from users.forms import CreateUserForm, UpdateProfileForm, UpdateUserForm
+from apps.users.forms import CreateUserForm, UpdateProfileForm, UpdateUserForm
 
 
 # Create your views here.

@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView
 from .models import Comment
-from posts.models import Post
+from apps.posts.models import Post
 
 
 # Create your views here.
