@@ -1,27 +1,90 @@
 # RUET CampusConnect
-Ruet boasts a vibrant tapestry of clubs and organizations, uniting our students, teachers, and office staff in a rich array of activities. From ASSR to PSR to RUETDC, our diverse clubs and associations, including those for different zillas, form the heart of our community. While many of these groups currently rely on Facebook or Messenger for internal communication, the allure of these platforms can sometimes lead to time wasted on videos and reels.
 
-To address this, I aspire to create a comprehensive web application that will serve as a centralized communication and collaboration platform for all our clubs and organizations. This innovative web app will provide a dynamic and interactive space for students to engage in discussions, share valuable information, and cultivate a strong sense of community within each club and across the entire university.
+**RUET CampusConnect** is a centralized communication and collaboration platform tailored for the vibrant community of RUET. Our university is home to a diverse range of clubs and organizations — from ASSR to PSR, RUETDC, and many others including zilla-based associations. While most of these currently rely on platforms like Facebook and Messenger, these tools often lead to distractions such as reels and videos.
 
-I believe this initiative will not only streamline communication but also foster a more focused and purposeful interaction among our community members. If you share my vision, I would greatly appreciate your support and input as we embark on this exciting journey together.
+**CampusConnect** aims to eliminate this friction by offering a focused, clutter-free, and productive environment for communication within and across student groups, faculty, and staff. Think of it as a Reddit-style platform designed exclusively for RUET — but better suited to our academic and organizational needs.
 
-### Key Features:
-- User Authentication and Profile Management (Login, Logout, and Registration)
-- Threads for Clubs and Organizations (Posts, Comments, and Replies)
-- Interactive Communication Tools (Upvote, Downvote, and Save)
-- Seamless Navigation and User Experience (Search, Sort, and Filter)
-- Integration of Multimedia and Event Management (Images, Videos, and Calendar)
-- Moderation Tools (Report, Block, and Delete)
-- Messaging and Chat (Direct and Group)
+---
 
-*It is going to be a reddit clone for my university* :grin: :sweat_smile: :wink:.
+## Vision
 
-### Tools:
-- Python
-- Django
-- HTMX
-- Tailwind CSS
-- Alpinejs
+To build a collaborative digital space where RUETians can:
+- Discuss ideas and activities,
+- Stay updated with club announcements,
+- Participate in event planning,
+- Share multimedia and academic resources,
+- Engage in meaningful dialogue — all in one place.
 
-### Todo
-- [ ] Slug URL for Posts
+---
+
+## Key Features
+
+- 🔐 **User Authentication** — Sign up, log in, manage profiles
+- 🧵 **Threads for Clubs & Orgs** — Post, comment, and reply
+- 👍 **Interactive Tools** — Upvote, downvote, and save posts
+- 🔍 **Smooth UX** — Search, sort, and filter content easily
+- 📅 **Multimedia & Events** — Images, videos, calendar integration
+- 🛡 **Moderation Tools** — Report, block, and content removal
+- 💬 **Messaging** — Direct and group chat functionality
+
+---
+
+## 🛠 Tech Stack
+
+- 🐍 **Python**
+- 🌐 **Django** — Backend framework
+- ⚡ **HTMX** — For dynamic frontend interactions
+- 🎨 **Tailwind CSS** — Utility-first styling
+- 🧩 **Alpine.js** — Lightweight frontend logic
+
+---
+
+## 📋 Todo
+
+- [ ] Slug URLs for posts
+- [ ] Pagination for threads
+- [ ] Notifications system
+- [ ] Direct messaging between users
+- [ ] Full-text search with filters
+- [ ] Role-based access (admins, moderators, members)
+- [ ] REST API for mobile app (future scope)
+
+---
+
+## 📁 Project Structure (Modular)
+
+```
+ruetconnect/
+├── apps/
+│   ├── campus/         # Campus homepage and core pages
+│   ├── posts/          # Forum posts and threads
+│   ├── comments/       # Nested comments and replies
+│   ├── threads/        # Topic-based discussions
+│   ├── users/          # Profiles, login, registration
+│   └── votes/          # Upvotes, downvotes
+├── config/             # Project settings and routing
+├── shared/             # Utilities, constants, mixins
+├── templates/          # Base and shared HTML templates
+├── static/             # Static files (JS, CSS, images)
+├── media/              # Uploaded content
+├── pyproject.toml      # Dependency management
+└── manage.py
+```
+
+---
+
+## 🤝 Contributing
+
+Want to help build RUET's future communication hub? Contributions are welcome! Feel free to fork the repo, open issues, or submit pull requests.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 💡 Acknowledgments
+
+Built with 💙 for the RUET community.
