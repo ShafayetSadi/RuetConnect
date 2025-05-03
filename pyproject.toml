@@ -1,24 +1,20 @@
-[tool.poetry]
-name = "campusconnect"
+[project]
+name = "ruetconnect"
 version = "0.1.0"
-description = ""
-authors = ["Shafayetul Huda Sadi <shafayet.sadi@gmail.com>"]
-license = "MIT"
+description = "Add your description here"
 readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=5.2",
+    "django-htmx>=1.23.0",
+    "django-template-partials>=24.4",
+    "django-widget-tweaks>=1.5.0",
+    "pillow>=11.2.1",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-Django = "^5.0.1"
-django-widget-tweaks = "^1.5.0"
-django-htmx = "^1.17.2"
-django-tailwind = {extras = ["reload"], version = "^3.8.0"}
-pillow = "^10.2.0"
-django-template-partials = "^23.4"
-
-
-[tool.poetry.group.dev.dependencies]
-flake8 = "^7.0.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "django-browser-reload>=1.18.0",
+    "django-tailwind-cli>=4.2.3",
+    "flake8>=7.2.0",
+]

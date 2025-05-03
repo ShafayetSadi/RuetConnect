@@ -26,14 +26,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Project Apps
     "campus.apps.CampusConfig",
     "users.apps.UsersConfig",
     "threads.apps.ThreadsConfig",
     "posts.apps.PostsConfig",
     "comments.apps.CommentsConfig",
     "votes.apps.VotesConfig",
-    "tailwind",
-    "theme",
+
+    # Third Party Apps
+    "django_tailwind_cli",
     "django_browser_reload",
     "widget_tweaks",
     'django_htmx',
