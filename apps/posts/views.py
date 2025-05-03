@@ -1,12 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 
 from apps.posts.models import Post
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['thread', 'title', 'content']
+    fields = ["thread", "title", "content"]
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -15,7 +15,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    fields = ["title", "content"]
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -30,7 +30,7 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
-    success_url = '/'
+    success_url = "/"
 
     def test_func(self):
         post = self.get_object()
@@ -44,5 +44,5 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['comments'] = self.object.comments.all().order_by('-date_posted')
+        context["comments"] = self.object.comments.all().order_by("-date_posted")
         return context

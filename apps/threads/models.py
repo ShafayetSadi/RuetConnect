@@ -1,4 +1,5 @@
 from django.db import models
+
 from apps.users.models import User
 
 
@@ -9,10 +10,14 @@ class Thread(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, related_name='threads', on_delete=models.CASCADE)
-    subscribers = models.ManyToManyField(User, through='Subscribed', related_name='subscribed_threads', blank=True)
-    image = models.ImageField(default='thread.jpg', upload_to='thread_pics', blank=True)
-    banner = models.ImageField(default='banner.jpg', upload_to='thread_banners', blank=True)
+    owner = models.ForeignKey(User, related_name="threads", on_delete=models.CASCADE)
+    subscribers = models.ManyToManyField(
+        User, through="Subscribed", related_name="subscribed_threads", blank=True
+    )
+    image = models.ImageField(default="thread.jpg", upload_to="thread_pics", blank=True)
+    banner = models.ImageField(
+        default="banner.jpg", upload_to="thread_banners", blank=True
+    )
 
     def __str__(self):
         return self.name
@@ -22,8 +27,9 @@ class Thread(models.Model):
             self.title = self.name
         super().save(*args, **kwargs)
         from django.core.cache import cache
-        cache.delete('threads')
-        cache.delete('thread_{}'.format(self.name))
+
+        cache.delete("threads")
+        cache.delete("thread_{}".format(self.name))
 
 
 class Subscribed(models.Model):
@@ -32,7 +38,7 @@ class Subscribed(models.Model):
     subscribed_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'thread')
+        unique_together = ("user", "thread")
 
     def __str__(self):
-        return '{} subscribed to {}'.format(self.user, self.thread)
+        return "{} subscribed to {}".format(self.user, self.thread)

@@ -18,5 +18,11 @@ dev = [
     "django-browser-reload>=1.18.0",
     "django-tailwind-cli>=4.2.3",
     "flake8>=7.2.0",
+    "pre-commit>=4.2.0",
     "pytest>=8.3.5",
 ]
+
+
+[tool.isort]
+profile = "black"
+line_length = 119

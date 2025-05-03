@@ -15,35 +15,84 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Subscribed',
+            name="Subscribed",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('subscribed_on', models.DateTimeField(auto_now_add=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("subscribed_on", models.DateTimeField(auto_now_add=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Thread',
+            name="Thread",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.SlugField(max_length=30, unique=True)),
-                ('title', models.CharField(blank=True, max_length=200)),
-                ('description', models.TextField(blank=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('modified_at', models.DateTimeField(auto_now=True)),
-                ('image', models.ImageField(blank=True, default='thread.jpg', upload_to='thread_pics')),
-                ('banner', models.ImageField(blank=True, default='banner.jpg', upload_to='thread_banners')),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='threads', to=settings.AUTH_USER_MODEL)),
-                ('subscribers', models.ManyToManyField(blank=True, related_name='subscribed_threads', through='threads.Subscribed', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.SlugField(max_length=30, unique=True)),
+                ("title", models.CharField(blank=True, max_length=200)),
+                ("description", models.TextField(blank=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("modified_at", models.DateTimeField(auto_now=True)),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True, default="thread.jpg", upload_to="thread_pics"
+                    ),
+                ),
+                (
+                    "banner",
+                    models.ImageField(
+                        blank=True, default="banner.jpg", upload_to="thread_banners"
+                    ),
+                ),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="threads",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "subscribers",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="subscribed_threads",
+                        through="threads.Subscribed",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='subscribed',
-            name='thread',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='threads.thread'),
+            model_name="subscribed",
+            name="thread",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="threads.thread"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='subscribed',
-            unique_together={('user', 'thread')},
+            name="subscribed",
+            unique_together={("user", "thread")},
         ),
     ]

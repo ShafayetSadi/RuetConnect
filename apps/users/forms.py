@@ -1,7 +1,7 @@
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
-from .models import User, Profile
+from .models import Profile, User
 
 
 class CreateUserForm(UserCreationForm):
@@ -9,13 +9,13 @@ class CreateUserForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ["username", "email", "password1", "password2"]
 
 
 class UpdateUserForm(UserChangeForm):
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password']
+        fields = ["username", "first_name", "last_name", "email", "password"]
 
 
 class UpdateProfileForm(forms.ModelForm):
@@ -27,24 +27,32 @@ class UpdateProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['bio', 'birth_date', 'image', 'address', 'city', 'country', 'social_links']
+        fields = [
+            "bio",
+            "birth_date",
+            "image",
+            "address",
+            "city",
+            "country",
+            "social_links",
+        ]
 
     def __init__(self, *args, **kwargs):
         super(UpdateProfileForm, self).__init__(*args, **kwargs)
         social_links = self.instance.social_links or {}
-        self.fields['github'].initial = social_links.get('github', '')
-        self.fields['linkedin'].initial = social_links.get('linkedin', '')
-        self.fields['facebook'].initial = social_links.get('facebook', '')
-        self.fields['twitter'].initial = social_links.get('twitter', '')
-        self.fields['instagram'].initial = social_links.get('instagram', '')
+        self.fields["github"].initial = social_links.get("github", "")
+        self.fields["linkedin"].initial = social_links.get("linkedin", "")
+        self.fields["facebook"].initial = social_links.get("facebook", "")
+        self.fields["twitter"].initial = social_links.get("twitter", "")
+        self.fields["instagram"].initial = social_links.get("instagram", "")
 
     def save(self, commit=True):
         social_links = {
-            'github': self.cleaned_data.get('github', ''),
-            'linkedin': self.cleaned_data.get('linkedin', ''),
-            'facebook': self.cleaned_data.get('facebook', ''),
-            'twitter': self.cleaned_data.get('twitter', ''),
-            'instagram': self.cleaned_data.get('instagram', ''),
+            "github": self.cleaned_data.get("github", ""),
+            "linkedin": self.cleaned_data.get("linkedin", ""),
+            "facebook": self.cleaned_data.get("facebook", ""),
+            "twitter": self.cleaned_data.get("twitter", ""),
+            "instagram": self.cleaned_data.get("instagram", ""),
         }
         self.instance.social_links = social_links
         return super(UpdateProfileForm, self).save(commit=commit)

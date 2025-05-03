@@ -1,0 +1,11 @@
+[flake8]
+ignore = C101, I100
+exclude = .git,__pycache__,.venv,*/migrations/*,*/tests/*
+
+filename = *.py
+accept-encodings = utf-8
+inline-quotes = double
+max-complexity = 6
+max-linenumber = 500
+max-line-length = 119
+multiline-quotes = double
