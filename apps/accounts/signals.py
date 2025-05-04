@@ -1,3 +1,4 @@
+from allauth.account.signals import email_confirmed
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -15,3 +16,11 @@ def create_profile(sender, instance, created, **kwargs):
 def save_profile(sender, instance, **kwargs):
     # if user is saved, save profile
     instance.profile.save()
+
+
+@receiver(email_confirmed)
+def email_verified_handler(request, email_address, **kwargs):
+    """When a user confirms their email, set the is_email_verified field to True."""
+    user = email_address.user
+    user.is_email_verified = True
+    user.save()

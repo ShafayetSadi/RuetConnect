@@ -40,3 +40,7 @@ test:
 
 .PHONY: update
 update: sync migrate install-pre-commit;
+
+.PHONY: freeze
+freeze:
+	uv pip freeze > requirements.txt

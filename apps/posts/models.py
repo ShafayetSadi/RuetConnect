@@ -12,7 +12,7 @@ class Post(models.Model):
     content = models.TextField()
 
     author = models.ForeignKey(
-        "users.User", related_name="posts", on_delete=models.CASCADE
+        "accounts.User", related_name="posts", on_delete=models.CASCADE
     )
     thread = models.ForeignKey(
         "threads.Thread", related_name="posts", on_delete=models.CASCADE

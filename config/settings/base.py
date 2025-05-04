@@ -1,23 +1,16 @@
 import os.path
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+from decouple import config
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+SECRET_KEY = config("SECRET_KEY")
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-yl9s@gq5%ju)p1uxsj-l%fpbi2jvytty6%vf^m%(^ajzf)yxq+"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
-# Application definition
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -26,20 +19,25 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    "django.contrib.sites",
     # Project Apps
     "apps.campus",
-    "apps.users",
+    "apps.accounts",
     "apps.threads",
     "apps.posts",
     "apps.comments",
     "apps.votes",
     # Third Party Apps
     "django_tailwind_cli",
-    "django_browser_reload",
     "widget_tweaks",
     "django_htmx",
     "template_partials",
-    "django.contrib.humanize",
+    "django_cotton",
+    "lucide",
+    # Django Allauth
+    "allauth",
+    "allauth.account",
 ]
 
 MIDDLEWARE = [
@@ -50,8 +48,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
-    "django_htmx.middleware.HtmxMiddleware",
+    "allauth.account.middleware.AccountMiddleware",  # allauth
+    "django_htmx.middleware.HtmxMiddleware",  # htmx
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -74,7 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -84,7 +81,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -104,7 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -116,7 +111,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
@@ -126,20 +120,31 @@ STATIC_URL = "static/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# My settings
-AUTH_USER_MODEL = "users.User"
-TAILWIND_APP_NAME = "theme"
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
-NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+SITE_ID = 1
+AUTH_USER_MODEL = "accounts.User"
 
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "home"
-LOGOUT_REDIRECT_URL = "home"
+# Allauth settings
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
+
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_UNIQUE_EMAIL = True
+
+ACCOUNT_RATE_LIMITS = {
+    "login_failed": "5/m",  # 5 attempts per minute
+}
+
+ACCOUNT_SIGNUP_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/accounts/login/"
+
+
+TAILWIND_CLI_USE_DAISY_UI = True

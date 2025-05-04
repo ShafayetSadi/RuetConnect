@@ -1,0 +1,10 @@
+{% load lucide %}
+
+<label class="swap swap-rotate">
+    <input type="checkbox" class="theme-controller" :value="theme"
+           @click="theme = theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('theme', theme);"
+    />
+    {% lucide "sun" size=26 extra_classes="mr-4" class="swap-off" %}
+    {% lucide "moon" size=26 extra_classes="mr-4" class="swap-on" %}
+
+</label>

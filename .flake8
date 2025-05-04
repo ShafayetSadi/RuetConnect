@@ -1,5 +1,5 @@
 [flake8]
-ignore = C101, I100
+ignore = C101, I100, I201
 exclude = .git,__pycache__,.venv,*/migrations/*,*/tests/*
 
 filename = *.py

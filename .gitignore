@@ -200,7 +200,6 @@ celerybeat-schedule
 /local
 ENV/
 env.bak/
-env/
 venv
 venv.bak/
 venv/
@@ -220,4 +219,7 @@ venv/
 
 # pytest
 .pytest_cache/
-/node_modules/
+
+
+.django_tailwind_cli/*.exe
+tailwind.css

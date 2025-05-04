@@ -1,21 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 
-from .models import Profile, User
-
-
-class CreateUserForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-
-    class Meta:
-        model = User
-        fields = ["username", "email", "password1", "password2"]
-
-
-class UpdateUserForm(UserChangeForm):
-    class Meta:
-        model = User
-        fields = ["username", "first_name", "last_name", "email", "password"]
+from .models import Profile
 
 
 class UpdateProfileForm(forms.ModelForm):
@@ -31,9 +16,6 @@ class UpdateProfileForm(forms.ModelForm):
             "bio",
             "birth_date",
             "image",
-            "address",
-            "city",
-            "country",
             "social_links",
         ]
 

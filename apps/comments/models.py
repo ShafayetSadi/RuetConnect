@@ -7,7 +7,7 @@ class Comment(models.Model):
     content = models.TextField()
 
     author = models.ForeignKey(
-        "users.User", related_name="comments", on_delete=models.CASCADE
+        "accounts.User", related_name="comments", on_delete=models.CASCADE
     )
     post = models.ForeignKey(
         "posts.Post", related_name="comments", on_delete=models.CASCADE

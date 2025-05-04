@@ -1,6 +1,6 @@
 from django.db import models
 
-from apps.users.models import User
+from apps.accounts.models import User
 
 
 class Thread(models.Model):
