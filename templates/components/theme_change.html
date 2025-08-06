@@ -4,7 +4,10 @@
     <input type="checkbox" class="theme-controller" :value="theme"
            @click="theme = theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('theme', theme);"
     />
-    {% lucide "sun" size=26 extra_classes="mr-4" class="swap-off" %}
-    {% lucide "moon" size=26 extra_classes="mr-4" class="swap-on" %}
-
+    <span x-cloak x-init="$el.classList.add(theme === 'dark' ? 'swap-on' : 'swap-off')">
+        {% lucide "sun" size=26 class="mr-4 fill-current" %}
+    </span>
+    <span x-cloak x-init="$el.classList.add(theme === 'dark' ? 'swap-off' : 'swap-on')">
+        {% lucide "moon" size=26 class="mr-4 fill-current" %}
+    </span>
 </label>
