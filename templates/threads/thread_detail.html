@@ -1,0 +1,125 @@
+{% extends "base.html" %} {% block content %} {% load humanize %} {% load static
+%}
+<div class="container mx-auto flex flex-col lg:flex-row gap-4 p-4">
+  <!-- Left Sidebar -->
+  <div class="lg:w-1/4">
+    <div class="card bg-base-100 shadow-md sticky top-20">
+      <div class="card-body">{% include 'campus/left_bar.html' %}</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="lg:w-2/4">
+    <div class="space-y-4">
+      <!-- Thread Header -->
+      <div class="card bg-base-100 shadow-md overflow-hidden">
+        <!-- Banner -->
+        <div
+          class="h-36 bg-gradient-to-r from-primary to-secondary opacity-20"
+        ></div>
+
+        <!-- Thread Info -->
+        <div class="card-body">
+          <div class="flex items-center gap-4">
+            <div class="avatar">
+              <div
+                class="w-20 h-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
+              >
+                <img
+                  src="{% static 'images/thread.jpg' %}"
+                  alt="Thread avatar"
+                />
+              </div>
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold">r/{{ thread.name }}</h1>
+              {% if thread.description %}
+              <p class="text-base-content/70 mt-2">{{ thread.description }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Posts List -->
+      <div class="space-y-4">
+        {% for post in thread.posts.all %} {% include 'posts/post_card.html' %}
+        {% empty %}
+        <div class="card bg-base-100 shadow-md">
+          <div class="card-body text-center">
+            <p class="text-base-content/60">No posts in this thread yet.</p>
+            <a href="{% url 'post-create' %}" class="btn btn-primary mt-4"
+              >Create First Post</a
+            >
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Sidebar -->
+  <div class="lg:w-1/4">
+    <div class="card bg-base-100 shadow-md sticky top-20">
+      <div class="card-body">
+        <h3 class="card-title text-lg mb-4">About r/{{ thread.name }}</h3>
+
+        {% if thread.description %}
+        <p class="text-sm text-base-content/70 mb-4">
+          {{ thread.description }}
+        </p>
+        {% endif %}
+
+        <div class="divider"></div>
+
+        <!-- Stats -->
+        <div class="stats stats-vertical">
+          <div class="stat">
+            <div class="stat-title">Members</div>
+            <div class="stat-value text-primary">1</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Online</div>
+            <div class="stat-value text-secondary">1</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Posts</div>
+            <div class="stat-value text-accent">{{ thread.posts.count }}</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Rules -->
+        <div class="mb-4">
+          <h4 class="font-semibold mb-2">Rules</h4>
+          <ul
+            class="list-disc list-inside text-sm text-base-content/70 space-y-1"
+          >
+            <li>Be respectful</li>
+            <li>Stay on topic</li>
+            <li>No spam</li>
+          </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Moderators -->
+        <div>
+          <h4 class="font-semibold mb-2">Moderators</h4>
+          <div class="flex items-center gap-2">
+            <div class="avatar">
+              <div class="w-6 h-6 rounded-full">
+                <img src="{% static 'images/thread.jpg' %}" alt="Moderator" />
+              </div>
+            </div>
+            <span class="text-sm">u/{{ thread.owner.username }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

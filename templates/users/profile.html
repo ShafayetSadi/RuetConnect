@@ -1,0 +1,143 @@
+{% extends 'campus/base.html' %} {% block content %}
+<div class="container mx-auto flex flex-col lg:flex-row gap-4 p-4">
+  <!-- Left Sidebar -->
+  <div class="lg:w-1/4">
+    <div class="card bg-base-100 shadow-md sticky top-20">
+      <div class="card-body">{% include 'campus/left_bar.html' %}</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="lg:w-2/4">
+    <div class="space-y-4">
+      <!-- Profile Card -->
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body text-center">
+          <div class="avatar mb-4">
+            <div
+              class="w-32 h-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
+            >
+              <img src="{{ user.profile.image.url }}" alt="profile picture" />
+            </div>
+          </div>
+          <h2 class="text-2xl font-bold text-primary">
+            {{ user.first_name }} {{ user.last_name }}
+          </h2>
+          <p class="text-base-content/70 text-lg">@{{ user.username }}</p>
+          <p class="text-base-content/60">{{ user.email }}</p>
+
+          <!-- Social Links -->
+          <div class="flex flex-wrap justify-center gap-2 mt-4">
+            {% if user.profile.social_links.linkedin %}
+            <a
+              href="{{ user.profile.social_links.linkedin }}"
+              class="btn btn-sm btn-outline"
+              >LinkedIn</a
+            >
+            {% endif %} {% if user.profile.social_links.github %}
+            <a
+              href="{{ user.profile.social_links.github }}"
+              class="btn btn-sm btn-outline"
+              >Github</a
+            >
+            {% endif %} {% if user.profile.social_links.twitter %}
+            <a
+              href="{{ user.profile.social_links.twitter }}"
+              class="btn btn-sm btn-outline"
+              >Twitter</a
+            >
+            {% endif %} {% if user.profile.social_links.facebook %}
+            <a
+              href="{{ user.profile.social_links.facebook }}"
+              class="btn btn-sm btn-outline"
+              >Facebook</a
+            >
+            {% endif %} {% if user.profile.social_links.instagram %}
+            <a
+              href="{{ user.profile.social_links.instagram }}"
+              class="btn btn-sm btn-outline"
+              >Instagram</a
+            >
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body p-4">
+          <div class="tabs tabs-boxed">
+            <a class="tab tab-active">Posts</a>
+            <a class="tab">Comments</a>
+            <a class="tab">Upvoted</a>
+            <a class="tab">Downvoted</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts List -->
+      <div class="space-y-4">
+        {% for post in posts %} {% include 'posts/post_card.html' %} {% empty %}
+        <div class="card bg-base-100 shadow-md">
+          <div class="card-body text-center">
+            <p class="text-base-content/60">No posts yet.</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Sidebar -->
+  <div class="lg:w-1/4">
+    <div class="card bg-base-100 shadow-md sticky top-20">
+      <div class="card-body">
+        <h3 class="card-title text-lg mb-4">About</h3>
+
+        <!-- Address -->
+        <div class="mb-4">
+          <h4 class="font-semibold mb-2">Address</h4>
+          <p class="text-sm text-base-content/70">
+            {{ user.profile.address }}, {{ user.profile.city }}, {{
+            user.profile.country }}
+          </p>
+        </div>
+
+        <!-- Bio -->
+        <div class="mb-4">
+          <h4 class="font-semibold mb-2">Bio</h4>
+          {% if user.profile.bio %}
+          <p class="text-sm text-base-content/70">{{ user.profile.bio }}</p>
+          {% else %}
+          <p class="text-sm text-base-content/50 italic">No bio added yet.</p>
+          {% endif %}
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Stats -->
+        <div class="stats stats-vertical">
+          <div class="stat">
+            <div class="stat-title">Post Karma</div>
+            <div class="stat-value text-primary">1</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Comment Karma</div>
+            <div class="stat-value text-secondary">1</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Cake Day</div>
+            <div class="stat-value text-accent">
+              {{ user.profile.birth_date|date:"M d" }}
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <a href="update/" class="btn btn-primary w-full">Update Profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -219,7 +219,3 @@ venv/
 
 # pytest
 .pytest_cache/
-
-
-.django_tailwind_cli/*.exe
-tailwind.css

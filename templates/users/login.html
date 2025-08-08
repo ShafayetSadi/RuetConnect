@@ -1,0 +1,18 @@
+{% extends 'campus/base.html' %} {% block title %}Login-CampusConnect{% endblock
+%} {% block content %}
+<div
+  class="card w-full max-w-sm mx-auto my-12 bg-base-100 shadow-xl border border-base-200"
+>
+  <div class="card-body">
+    <h2 class="card-title text-center text-3xl font-bold mb-4">Login</h2>
+    <form method="post" class="flex flex-col gap-2">
+      {% csrf_token %} {% include 'data-form.html' with form=form %}
+      <button type="submit" class="btn btn-primary w-full mt-2">Sign In</button>
+    </form>
+    <div class="text-center mt-4 text-sm">
+      Need an account?
+      <a class="link link-primary ml-1" href="{% url 'register' %}">Sign Up</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

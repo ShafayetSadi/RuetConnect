@@ -58,7 +58,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
+        "APP_DIRS": False,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -147,4 +147,8 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 
+TAILWIND_CLI_SRC_CSS = "static/css/source.css"
+TAILWIND_CLI_DIST_CSS = "css/dist/tailwind.min.css"
+TAILWIND_CLI_AUTOMATIC_DOWNLOAD = False
 TAILWIND_CLI_USE_DAISY_UI = True
+TAILWIND_CLI_PATH = "/usr/local/bin/tailwindcss"

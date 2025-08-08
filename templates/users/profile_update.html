@@ -1,0 +1,288 @@
+{% extends "campus/base.html" %} {% block content %}
+<div class="container mx-auto p-4">
+  <div
+    class="card w-full max-w-4xl mx-auto bg-base-100 shadow-xl border border-base-200"
+  >
+    <div class="card-body">
+      <h2 class="card-title text-3xl mb-6 text-center">Update Your Profile</h2>
+
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Navigation Tabs -->
+        <div class="lg:w-1/3">
+          <div class="tabs tabs-vertical">
+            <a class="tab tab-active" onclick="switchTab('profile')">Profile</a>
+            <a class="tab" onclick="switchTab('account')">Account</a>
+            <a class="tab" onclick="switchTab('address')">Address</a>
+            <a class="tab" onclick="switchTab('social')">Social</a>
+            <a class="tab" onclick="switchTab('settings')">Settings</a>
+          </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="lg:w-2/3">
+          <form method="POST" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Profile Tab -->
+            <div id="profile-tab" class="tab-content">
+              <div class="flex flex-col lg:flex-row gap-6 mb-6">
+                <div class="avatar">
+                  <div
+                    class="w-32 h-32 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
+                  >
+                    <img
+                      src="{{ user.profile.image.url }}"
+                      alt="profile picture"
+                    />
+                  </div>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <label for="id_image" class="btn btn-outline w-fit"
+                    >Change Avatar</label
+                  >
+                  <input
+                    type="file"
+                    name="image"
+                    id="id_image"
+                    class="hidden"
+                    accept="image/*"
+                  />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">First Name</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    value="{{ user.first_name }}"
+                    class="input input-bordered"
+                  />
+                </div>
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">Last Name</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value="{{ user.last_name }}"
+                    class="input input-bordered"
+                  />
+                </div>
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">Birth Date</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="birth_date"
+                    value="{{ user.profile.birth_date|date:'Y-m-d' }}"
+                    class="input input-bordered"
+                  />
+                </div>
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-semibold">Bio</span>
+                </label>
+                <textarea
+                  name="bio"
+                  class="textarea textarea-bordered h-24"
+                  placeholder="Tell us about yourself..."
+                >
+{{ user.profile.bio }}</textarea
+                >
+              </div>
+            </div>
+
+            <!-- Account Tab -->
+            <div id="account-tab" class="tab-content hidden">
+              <div class="space-y-4">
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">Username</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="username"
+                    value="{{ user.username }}"
+                    class="input input-bordered"
+                  />
+                </div>
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">Email</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value="{{ user.email }}"
+                    class="input input-bordered"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Address Tab -->
+            <div id="address-tab" class="tab-content hidden">
+              <div class="space-y-4">
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">Address</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    value="{{ user.profile.address }}"
+                    class="input input-bordered"
+                  />
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text font-semibold">City</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      value="{{ user.profile.city }}"
+                      class="input input-bordered"
+                    />
+                  </div>
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text font-semibold">Country</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="country"
+                      value="{{ user.profile.country }}"
+                      class="input input-bordered"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Social Tab -->
+            <div id="social-tab" class="tab-content hidden">
+              <h3 class="text-lg font-semibold mb-4">Social Links</h3>
+              <div class="space-y-4">
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">GitHub</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="github"
+                    value="{{ p_form.github.value }}"
+                    class="input input-bordered"
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">LinkedIn</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="linkedin"
+                    value="{{ p_form.linkedin.value }}"
+                    class="input input-bordered"
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">Facebook</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="facebook"
+                    value="{{ p_form.facebook.value }}"
+                    class="input input-bordered"
+                    placeholder="https://facebook.com/username"
+                  />
+                </div>
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">Twitter</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="twitter"
+                    value="{{ p_form.twitter.value }}"
+                    class="input input-bordered"
+                    placeholder="https://twitter.com/username"
+                  />
+                </div>
+                <div class="form-control">
+                  <label class="label">
+                    <span class="label-text font-semibold">Instagram</span>
+                  </label>
+                  <input
+                    type="url"
+                    name="instagram"
+                    value="{{ p_form.instagram.value }}"
+                    class="input input-bordered"
+                    placeholder="https://instagram.com/username"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content hidden">
+              <div class="space-y-4">
+                <div class="form-control">
+                  <label class="label cursor-pointer">
+                    <span class="label-text font-semibold">Notifications</span>
+                    <input type="checkbox" class="toggle toggle-primary" />
+                  </label>
+                </div>
+                <div class="form-control">
+                  <label class="label cursor-pointer">
+                    <span class="label-text font-semibold">Dark Mode</span>
+                    <input type="checkbox" class="toggle toggle-primary" />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <button type="submit" class="btn btn-primary w-full">
+              Update Profile
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll(".tab-content").forEach((content) => {
+      content.classList.add("hidden");
+    });
+
+    // Remove active class from all tabs
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.classList.remove("tab-active");
+    });
+
+    // Show selected tab content
+    document.getElementById(tabName + "-tab").classList.remove("hidden");
+
+    // Add active class to clicked tab
+    event.target.classList.add("tab-active");
+  }
+</script>
+{% endblock content %}

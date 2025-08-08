@@ -1,0 +1,33 @@
+{% extends 'base.html' %} {% load static %} {% load widget_tweaks %} {% block
+head %} {% endblock %} {% block content %}
+<div
+  class="card w-full max-w-lg mx-auto my-12 bg-base-100 shadow-xl border border-base-200"
+>
+  <div class="card-body">
+    <h2 class="card-title text-center text-3xl font-bold mb-4">
+      Create a Post
+    </h2>
+    <form method="post" class="flex flex-col gap-2">
+      {% csrf_token %}
+      <label for="{{ form.thread.id_for_label }}"
+        >{{ form.thread.label }}</label
+      >
+      {% render_field form.thread class="select select-bordered mb-2" %}
+      <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+      {% render_field form.title class="input input-bordered mb-2" %}
+      <label for="{{ form.content.id_for_label }}"
+        >{{ form.content.label }}</label
+      >
+      {% render_field form.content class="textarea textarea-bordered mb-2" %} {%
+      if form.non_field_errors %}
+      <div class="alert alert-error text-sm">
+        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+      </div>
+      {% endif %}
+      <button type="submit" class="btn btn-primary w-full mt-2">Create</button>
+    </form>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script></script>
+{% endblock %}
