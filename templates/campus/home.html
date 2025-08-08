@@ -1,32 +1,25 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
 
-{% block content %}
-
-    <div class="container flex justify-center flex-row">
-        <div class="basis-1/4">
-            <div class="rounded-xl bg-card m-4 h-screen overflow-y-auto">
-                <div class="pb-28">
-                    {% include 'campus/left_bar.html' %}
-                </div>
-            </div>
+<div class="container mx-auto flex flex-row gap-4 px-4">
+    <div class="basis-4/20 max-w-xs">
+        <div class="rounded-xl bg-card h-screen overflow-y-auto">
+            <div class="pb-8">{% include 'campus/left_bar.html' %}</div>
         </div>
-        <div class="basis-2/4">
-            <div class="w-[800px] h-screen overflow-y-auto no-scrollbar">
-                <div class="pb-20">
-                    {% for post in posts %}
-                        <div class="">
-                            {% include 'posts/post_card.html' %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="basis-1/4">
-            <div class="rounded-xl bg-card h-screen overflow-y-auto m-4">
-                <div class="pb-28">
-                    {% include 'campus/right_bar.html' %}
-                </div>
+    </div>
+    <div class="basis-11/20 max-w-4xl">
+        <div class="h-screen overflow-y-auto no-scrollbar">
+            <div class="pb-8 mt-4">
+                {% for post in posts %}
+                <div class="ml-16 mr-8">{% include 'posts/post_card.html' %}</div>
+                {% endfor %}
             </div>
         </div>
     </div>
+    <div class="basis-5/20">
+        <div class="rounded-xl bg-card h-screen overflow-y-auto">
+            {% include 'campus/right_bar.html' %}
+        </div>
+    </div>
+</div>
+</div>
 {% endblock content %}

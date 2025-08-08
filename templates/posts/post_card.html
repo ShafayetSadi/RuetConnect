@@ -1,24 +1,16 @@
 {% load static %} {% load humanize %}
-<div class="card bg-base-100 border border-base-200 shadow-md my-4">
-  <div class="card-body p-4">
+<div class="card bg-base-100 border border-base-200 shadow-md">
+  <div class="card-body p-4 pb-2">
     <!-- Post Header -->
     <div class="flex gap-2 text-xs items-center mb-2">
       <a href="{% url 'thread-detail' post.thread %}" class="avatar">
         <img class="w-8 h-8 rounded-full" src="{{ post.thread.image.url }}" />
       </a>
-      <a
-        class="font-bold px-2 link link-primary"
-        href="{% url 'thread-detail' post.thread %}"
-        >r/{{ post.thread }}</a
-      >
+      <a class="font-bold px-2 link link-primary" href="{% url 'thread-detail' post.thread %}">r/{{ post.thread }}</a>
       <span class="opacity-60">•</span>
       <span>Posted by</span>
-      <a class="ml-1 link link-secondary" href="{% url 'profile' %}"
-        >u/{{ post.author }}</a
-      >
-      <span class="ml-2 text-base-content/60"
-        >{{ post.date_posted | naturaltime }}</span
-      >
+      <a class="ml-1 link link-secondary" href="{% url 'profile' %}">u/{{ post.author }}</a>
+      <span class="ml-2 text-base-content/60">{{ post.date_posted | naturaltime }}</span>
     </div>
     <!-- Post Title & Content -->
     <a href="{% url 'post-detail' post.slug %}" class="block">
@@ -27,21 +19,20 @@
         {{ post.content }}
       </div>
     </a>
-    <div class="divider my-2"></div>
     <!-- Post Action Buttons -->
-    <div class="flex flex-wrap gap-2 items-center justify-between">
+    <div class="flex flex-wrap gap-4 items-center text-sm mt-1">
       <div>{% include 'campus/vote.html' %}</div>
       <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline">
         <span>{{ post.comments.count }} comments</span>
       </a>
-      <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline"
-        >Share</a
-      >
       {% if post.author == user %}
-      <a href="{% url 'post-update' post.id %}" class="btn btn-sm btn-outline"
-        >Edit</a
-      >
+      <a href="{% url 'post-update' post.id %}" class="btn btn-sm btn-outline">
+        <span>Update</span>
+      </a>
       {% endif %}
+      <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline">
+        <span>Share</span>
+      </a>
     </div>
   </div>
 </div>
