@@ -1,0 +1,13 @@
+{% load lucide %}
+
+<label class="swap swap-rotate">
+    <input
+        type="checkbox"
+        class="theme-controller"
+        aria-label="Toggle dark mode"
+        :checked="theme === 'dark'"
+        @click="theme = theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('theme', theme);"
+    />
+    <span class="swap-on" x-cloak>{% lucide "sun" size=26 class="mr-2" %}</span>
+    <span class="swap-off" x-cloak>{% lucide "moon" size=26 class="mr-2" %}</span>
+</label>

@@ -1,43 +1,37 @@
 {% load humanize %} {% load static %}
-<div class="card bg-base-100 border border-base-200 shadow-sm my-2">
-  <div class="card-body p-4">
-    <div class="flex gap-3">
-      <!-- Avatar -->
-      <div class="avatar">
-        <div class="w-8 h-8 rounded-full">
-          <img src="{{ comment.author.profile.image.url }}" alt="Avatar" />
-        </div>
-      </div>
+<div class="card bg-base-200 border-base-300 my-2 border shadow-sm">
+    <div class="card-body p-4">
+        <div class="flex gap-3">
+            <!-- Avatar -->
+            <div class="avatar">
+                <div class="h-8 w-8 rounded-full">
+                    <img src="{{ comment.author.profile.image.url }}" alt="Avatar" />
+                </div>
+            </div>
 
-      <!-- Comment Content -->
-      <div class="flex-1">
-        <!-- Comment Header -->
-        <div class="flex items-center gap-2 text-xs mb-2">
-          <a href="{% url 'profile' %}" class="font-semibold link link-primary"
-            >{{ comment.author.username }}</a
-          >
-          <span class="text-base-content/60">•</span>
-          <span class="text-base-content/60"
-            >{{ comment.date_posted|naturaltime }}</span
-          >
-        </div>
+            <!-- Comment Content -->
+            <div class="flex-1">
+                <!-- Comment Header -->
+                <div class="mb-2 flex items-center gap-2 text-xs">
+                    <a href="{% url 'profile' %}" class="link link-primary font-semibold">
+                        {{ comment.author.username }}
+                    </a>
+                    <span class="text-base-content/60">•</span>
+                    <span class="text-base-content/60">{{ comment.date_posted|naturaltime }}</span>
+                </div>
 
-        <!-- Comment Text -->
-        <div class="prose prose-sm max-w-none mb-3">
-          {{ comment.content|safe }}
-        </div>
+                <!-- Comment Text -->
+                <div class="prose prose-sm mb-3 max-w-none">{{ comment.content|safe }}</div>
 
-        <!-- Comment Actions -->
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1">
-            {% include 'comments/comment_vote.html' %}
-          </div>
-          <div class="flex gap-2 text-xs">
-            <button class="btn btn-ghost btn-xs">Reply</button>
-            <button class="btn btn-ghost btn-xs">Share</button>
-          </div>
+                <!-- Comment Actions -->
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1">{% include 'comments/comment_vote.html' %}</div>
+                    <div class="flex gap-2 text-xs">
+                        <button class="btn btn-ghost btn-xs">Reply</button>
+                        <button class="btn btn-ghost btn-xs">Share</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>

@@ -1,0 +1,35 @@
+{% load static %}
+<nav class="navbar bg-base-200 fixed left-0 top-0 z-40 w-full shadow-md">
+    <div class="container mx-auto flex h-14 items-center justify-between px-2 sm:px-4">
+        <a class="flex items-center gap-2" href="{% url 'campus-home' %}">
+            <img class="h-10 w-10 object-contain" src="{% static 'campus/RUET.png' %}" alt="RUET" />
+            <span class="text-primary hidden text-xl font-bold tracking-tight sm:block">CampusConnect</span>
+        </a>
+        <form class="mx-4 max-w-md flex-1" autocomplete="off">
+            {% csrf_token %}
+            <input
+                type="text"
+                name="query"
+                placeholder="Search Campus..."
+                class="input input-bordered bg-base-100 w-full"
+                hx-post="{% url 'campus-search' %}"
+                hx-trigger="input changed delay:500ms, search"
+                hx-target="#search-results"
+                hx-swap="innerHTML"
+            />
+        </form>
+        <div class="flex items-center gap-2">
+            {% if user.is_authenticated %}
+            <a class="btn btn-primary btn-sm" href="{% url 'post-create' %}">New Post</a>
+            <a class="btn btn-ghost btn-sm" href="{% url 'profile' %}">Profile</a>
+            <a class="btn btn-error btn-sm" href="{% url 'account_logout' %}">Log Out</a>
+            {% else %}
+            <a class="btn btn-primary btn-sm" href="{% url 'account_login' %}">Log In</a>
+            <a class="btn btn-outline btn-primary btn-sm hidden sm:inline-flex" href="{% url 'account_signup' %}">
+                Sign Up
+            </a>
+            {% endif %}
+            <span class="ml-2">{% include 'partials/theme_change.html' %}</span>
+        </div>
+    </div>
+</nav>

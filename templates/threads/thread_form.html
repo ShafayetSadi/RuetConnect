@@ -1,44 +1,35 @@
-{% extends 'base.html' %} {% load static %} {% load widget_tweaks %} {% block
-head %} {% endblock %} {% block content %}
-<div
-  class="card w-full max-w-lg mx-auto my-12 bg-base-100 shadow-xl border border-base-200"
->
-  <div class="card-body">
-    <h2 class="card-title text-center text-3xl font-bold mb-4">
-      Create a Thread
-    </h2>
-    <form method="post" class="flex flex-col gap-4">
-      {% csrf_token %}
+{% extends 'base.html' %} {% load static %} {% load widget_tweaks %} {% block head %} {% endblock %} {% block content
+%}
+<div class="card bg-base-200 border-base-300 mx-auto my-12 w-full max-w-lg border shadow-xl">
+    <div class="card-body">
+        <h2 class="card-title mb-4 text-center text-3xl font-bold">Create a Thread</h2>
+        <form method="post" class="flex flex-col gap-4">
+            {% csrf_token %}
 
-      <div class="form-control">
-        <label for="{{ form.name.id_for_label }}" class="label">
-          <span class="label-text font-semibold">{{ form.name.label }}</span>
-        </label>
-        {% render_field form.name class="input input-bordered"
-        placeholder="Enter thread name..." %}
-      </div>
+            <div class="form-control">
+                <label for="{{ form.name.id_for_label }}" class="label">
+                    <span class="label-text font-semibold">{{ form.name.label }}</span>
+                </label>
+                {% render_field form.name class="input input-bordered" placeholder="Enter thread name..." %}
+            </div>
 
-      <div class="form-control">
-        <label for="{{ form.description.id_for_label }}" class="label">
-          <span class="label-text font-semibold"
-            >{{ form.description.label }}</span
-          >
-        </label>
-        {% render_field form.description class="textarea textarea-bordered h-24"
-        placeholder="Describe your thread..." %}
-      </div>
+            <div class="form-control">
+                <label for="{{ form.description.id_for_label }}" class="label">
+                    <span class="label-text font-semibold">{{ form.description.label }}</span>
+                </label>
+                {% render_field form.description class="textarea textarea-bordered h-24" placeholder="Describe your
+                thread..." %}
+            </div>
 
-      {% if form.non_field_errors %}
-      <div class="alert alert-error text-sm">
-        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
-      </div>
-      {% endif %}
+            {% if form.non_field_errors %}
+            <div class="alert alert-error text-sm">
+                {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+            </div>
+            {% endif %}
 
-      <button type="submit" class="btn btn-primary w-full">
-        Create Thread
-      </button>
-    </form>
-  </div>
+            <button type="submit" class="btn btn-primary w-full">Create Thread</button>
+        </form>
+    </div>
 </div>
 {% endblock %} {% block scripts %}
 <script></script>

@@ -1,9 +1,13 @@
 {% extends "base.html" %} {% block content %}
-<h2>Delete Post</h2>
-<p>Are you sure you want to delete the post "{{ object.title }}"?</p>
-<form method="POST">
-  {% csrf_token %}
-  <button type="submit">Yes, delete</button>
-</form>
-<a href="{% url 'post-detail' object.slug %}">No, take me back</a>
+<div class="card bg-base-200 border-base-300 mx-auto my-12 w-full max-w-lg shadow-xl">
+    <div class="card-body">
+        <h2 class="card-title">Delete Post</h2>
+        <p>Are you sure you want to delete the post "{{ object.title }}"?</p>
+        <form method="POST" class="mt-4 flex justify-end gap-4">
+            {% csrf_token %}
+            <a class="btn btn-ghost" href="{% url 'post-detail' object.slug %}">Cancel</a>
+            <button type="submit" class="btn btn-error">Yes, delete</button>
+        </form>
+    </div>
+</div>
 {% endblock %}

@@ -1,20 +1,16 @@
-<form
-  action="{% url 'comment-create' post.slug %}"
-  method="post"
-  class="space-y-4"
->
-  {% csrf_token %}
-  <div class="form-control">
-    <label for="comment" class="label">
-      <span class="label-text font-semibold">Comment</span>
-    </label>
-    <textarea
-      required
-      name="content"
-      id="comment"
-      class="textarea textarea-bordered h-24"
-      placeholder="Write your thoughts..."
-    ></textarea>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+<form action="{% url 'comment-create' post.slug %}" method="post" class="space-y-4">
+    {% csrf_token %}
+    <div class="form-control">
+        <label for="comment" class="label">
+            <span class="label-text font-semibold">Comment</span>
+        </label>
+        <textarea
+            required
+            name="content"
+            id="comment"
+            class="textarea textarea-bordered h-24"
+            placeholder="Write your thoughts..."
+        ></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>

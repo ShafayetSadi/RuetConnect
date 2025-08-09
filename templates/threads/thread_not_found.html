@@ -1,4 +1,11 @@
 {% extends "base.html" %} {% block content %}
-<h1>Thread not found</h1>
-<p>The thread you are looking for does not exist.</p>
+<div class="card bg-base-200 border-base-300 mx-auto my-12 w-full max-w-lg shadow-xl">
+    <div class="card-body text-center">
+        <h1 class="text-2xl font-bold">Thread not found</h1>
+        <p>The thread you are looking for does not exist.</p>
+        <div class="card-actions mt-4 justify-center">
+            <a href="{% url 'campus-home' %}" class="btn btn-primary">Go to Homepage</a>
+        </div>
+    </div>
+</div>
 {% endblock content %}

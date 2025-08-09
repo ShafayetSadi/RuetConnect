@@ -134,8 +134,9 @@ SITE_ID = 1
 AUTH_USER_MODEL = "accounts.User"
 
 # Allauth settings
+ACCOUNT_FORMS = {"signup": "apps.accounts.forms.CustomSignupForm"}
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
-ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*"]
 
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True

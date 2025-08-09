@@ -1,8 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
-from apps.accounts.forms import UpdateProfileForm
+from apps.accounts.forms import UpdateProfileForm, UserUpdateForm
 
 
 @login_required
@@ -15,11 +15,20 @@ def profile(request):
 @login_required
 def profile_update(request):
     if request.method == "POST":
-        p_form = UpdateProfileForm(
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = UpdateProfileForm(
             request.POST, request.FILES, instance=request.user.profile
         )
-        messages.error(request, "Profile update failed. Invalid information.")
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, "Your profile has been updated successfully.")
+            return redirect("profile")
+        else:
+            messages.error(request, "Profile update failed. Invalid information.")
     else:
-        p_form = UpdateProfileForm(instance=request.user.profile)
-    context = {"p_form": p_form}
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = UpdateProfileForm(instance=request.user.profile)
+
+    context = {"user_form": user_form, "profile_form": profile_form}
     return render(request, "accounts/profile_update.html", context)

@@ -1,21 +1,25 @@
-<div class="flex justify-center items-center gap-4">
-  <form method="post" action="">
-    {% csrf_token %}
-    <button type="submit" class="hover:bg-accent rounded-lg">
-      <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" alt="Upvote">
-        <path class="fill-green-500 fill-muted-foreground "
-          d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601 17.919 12H15z" />
-      </svg>
-    </button>
-  </form>
+<div class="flex items-center justify-center gap-4">
+    <form method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="hover:bg-base-200 rounded-lg">
+            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" alt="Upvote">
+                <path
+                    class="text-success"
+                    d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601 17.919 12H15z"
+                />
+            </svg>
+        </button>
+    </form>
 
-  <form method="post" action="">
-    {% csrf_token %}
-    <button type="submit" class="hover:bg-accent rounded-lg">
-      <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" alt="Downvote">
-        <path class="fill-red-500 fill-muted-foreground "
-          d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059zM12 19.399 6.081 12H10V4h4v8h3.919L12 19.399z" />
-      </svg>
-    </button>
-  </form>
+    <form method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="hover:bg-base-200 rounded-lg">
+            <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" alt="Downvote">
+                <path
+                    class="text-error"
+                    d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059zM12 19.399 6.081 12H10V4h4v8h3.919L12 19.399z"
+                />
+            </svg>
+        </button>
+    </form>
 </div>

@@ -1,6 +1,17 @@
-{% for post in posts %}
-    <p> {{ post.title }} </p>
-    <p> {{ post.author }} </p>
-{% empty %}
-    <p> No posts found. </p>
-{% endfor %}
+<div class="container mx-auto">
+    <div class="card bg-base-200 border-base-300 my-4 border shadow-xl">
+        <div class="card-body p-4">
+            <h2 class="card-title text-lg">Search Results</h2>
+            <div class="divide-base-300 divide-y">
+                {% for post in posts %}
+                <a href="{% url 'post-detail' post.slug %}" class="hover:bg-base-100 block rounded-lg px-2 py-2">
+                    <p class="font-semibold">{{ post.title }}</p>
+                    <p class="text-base-content/60 text-sm">by @{{ post.author }}</p>
+                </a>
+                {% empty %}
+                <p class="text-base-content/60 py-4 text-center">No results found.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

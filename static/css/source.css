@@ -1,10 +1,105 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: light --default, dracula --prefersdark;
-  base: true;
-  styled: true;
-  utils: true;
-  logs: false;
-  rtl: false;
-  prefix: "";
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: oklch(98% 0.02 250); /* page background */
+  --color-base-200: oklch(95% 0.03 250); /* card background */
+  --color-base-300: oklch(92% 0.04 250); /* subtle hover */
+  --color-base-content: oklch(20% 0.05 250); /* text color */
+
+  --color-primary: oklch(55% 0.25 250); /* royal blue */
+  --color-primary-content: oklch(98% 0.02 250);
+
+  --color-secondary: oklch(70% 0.20 40); /* warm orange */
+  --color-secondary-content: oklch(98% 0.02 40);
+
+  --color-accent: oklch(65% 0.20 150); /* soft green */
+  --color-accent-content: oklch(98% 0.02 150);
+
+  --color-neutral: oklch(45% 0.02 250); /* neutral gray */
+  --color-neutral-content: oklch(98% 0.02 250);
+
+  --color-info: oklch(70% 0.18 230);
+  --color-info-content: oklch(98% 0.02 230);
+
+  --color-success: oklch(65% 0.20 140);
+  --color-success-content: oklch(98% 0.02 140);
+
+  --color-warning: oklch(80% 0.22 80);
+  --color-warning-content: oklch(20% 0.05 80);
+
+  --color-error: oklch(60% 0.25 25);
+  --color-error-content: oklch(98% 0.02 25);
+
+  /* Rounded corners */
+  --radius-selector: 0.75rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+
+  /* Sizes */
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  /* Border size */
+  --border: 1px;
+
+  /* Effects */
+  --depth: 1;
+  --noise: 0;
+}
+
+/* Dark Theme */
+@plugin "daisyui/theme" {
+  name: "dark";
+  color-scheme: dark;
+
+  --color-base-100: oklch(20% 0.02 250); /* dark background */
+  --color-base-200: oklch(25% 0.03 250); /* card background */
+  --color-base-300: oklch(30% 0.04 250); /* subtle hover */
+  --color-base-content: oklch(95% 0.02 250); /* text color */
+
+  --color-primary: oklch(60% 0.25 250); /* slightly brighter royal blue */
+  --color-primary-content: oklch(98% 0.02 250);
+
+  --color-secondary: oklch(75% 0.20 40); /* warm orange */
+  --color-secondary-content: oklch(98% 0.02 40);
+
+  --color-accent: oklch(70% 0.20 150); /* soft green */
+  --color-accent-content: oklch(98% 0.02 150);
+
+  --color-neutral: oklch(35% 0.02 250); /* deep gray */
+  --color-neutral-content: oklch(95% 0.02 250);
+
+  --color-info: oklch(75% 0.18 230);
+  --color-info-content: oklch(98% 0.02 230);
+
+  --color-success: oklch(70% 0.20 140);
+  --color-success-content: oklch(98% 0.02 140);
+
+  --color-warning: oklch(85% 0.22 80);
+  --color-warning-content: oklch(15% 0.05 80);
+
+  --color-error: oklch(65% 0.25 25);
+  --color-error-content: oklch(98% 0.02 25);
+
+  /* Rounded corners */
+  --radius-selector: 0.75rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+
+  /* Sizes */
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  /* Border size */
+  --border: 1px;
+
+  /* Effects */
+  --depth: 1;
+  --noise: 0;
 }

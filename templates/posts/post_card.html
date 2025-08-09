@@ -1,38 +1,38 @@
 {% load static %} {% load humanize %}
-<div class="card bg-base-100 border border-base-200 shadow-md">
-  <div class="card-body p-4 pb-2">
-    <!-- Post Header -->
-    <div class="flex gap-2 text-xs items-center mb-2">
-      <a href="{% url 'thread-detail' post.thread %}" class="avatar">
-        <img class="w-8 h-8 rounded-full" src="{{ post.thread.image.url }}" />
-      </a>
-      <a class="font-bold px-2 link link-primary" href="{% url 'thread-detail' post.thread %}">r/{{ post.thread }}</a>
-      <span class="opacity-60">•</span>
-      <span>Posted by</span>
-      <a class="ml-1 link link-secondary" href="{% url 'profile' %}">u/{{ post.author }}</a>
-      <span class="ml-2 text-base-content/60">{{ post.date_posted | naturaltime }}</span>
+<div class="card bg-base-200 border-base-300 border shadow-xl">
+    <div class="card-body p-4 pb-2">
+        <!-- Post Header -->
+        <div class="mb-2 flex items-center gap-2 text-xs">
+            <a href="{% url 'thread-detail' post.thread %}" class="avatar">
+                <img class="h-8 w-8 rounded-full" src="{{ post.thread.image.url }}" />
+            </a>
+            <a class="link link-primary px-2 font-bold" href="{% url 'thread-detail' post.thread %}">
+                r/{{ post.thread }}
+            </a>
+            <span class="opacity-60">•</span>
+            <span>Posted by</span>
+            <a class="link link-secondary ml-1" href="{% url 'profile' %}">u/{{ post.author }}</a>
+            <span class="text-base-content/60 ml-2">{{ post.date_posted | naturaltime }}</span>
+        </div>
+        <!-- Post Title & Content -->
+        <a href="{% url 'post-detail' post.slug %}" class="block">
+            <h2 class="mb-1 text-lg font-semibold">{{ post.title }}</h2>
+            <div class="text-base-content/70 line-clamp-4 text-sm">{{ post.content }}</div>
+        </a>
+        <!-- Post Action Buttons -->
+        <div class="mt-1 flex flex-wrap items-center gap-4 text-sm">
+            <div>{% include 'campus/vote.html' %}</div>
+            <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline">
+                <span>{{ post.comments.count }} comments</span>
+            </a>
+            {% if post.author == user %}
+            <a href="{% url 'post-update' post.id %}" class="btn btn-sm btn-outline">
+                <span>Update</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline">
+                <span>Share</span>
+            </a>
+        </div>
     </div>
-    <!-- Post Title & Content -->
-    <a href="{% url 'post-detail' post.slug %}" class="block">
-      <h2 class="text-lg font-semibold mb-1">{{ post.title }}</h2>
-      <div class="text-sm text-base-content/70 line-clamp-4">
-        {{ post.content }}
-      </div>
-    </a>
-    <!-- Post Action Buttons -->
-    <div class="flex flex-wrap gap-4 items-center text-sm mt-1">
-      <div>{% include 'campus/vote.html' %}</div>
-      <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline">
-        <span>{{ post.comments.count }} comments</span>
-      </a>
-      {% if post.author == user %}
-      <a href="{% url 'post-update' post.id %}" class="btn btn-sm btn-outline">
-        <span>Update</span>
-      </a>
-      {% endif %}
-      <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline">
-        <span>Share</span>
-      </a>
-    </div>
-  </div>
 </div>

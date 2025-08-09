@@ -1,33 +1,72 @@
-{% extends 'base.html' %} {% load static %} {% load widget_tweaks %} {% block
-head %} {% endblock %} {% block content %}
-<div
-  class="card w-full max-w-lg mx-auto my-12 bg-base-100 shadow-xl border border-base-200"
->
-  <div class="card-body">
-    <h2 class="card-title text-center text-3xl font-bold mb-4">
-      Create a Post
-    </h2>
-    <form method="post" class="flex flex-col gap-2">
-      {% csrf_token %}
-      <label for="{{ form.thread.id_for_label }}"
-        >{{ form.thread.label }}</label
-      >
-      {% render_field form.thread class="select select-bordered mb-2" %}
-      <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
-      {% render_field form.title class="input input-bordered mb-2" %}
-      <label for="{{ form.content.id_for_label }}"
-        >{{ form.content.label }}</label
-      >
-      {% render_field form.content class="textarea textarea-bordered mb-2" %} {%
-      if form.non_field_errors %}
-      <div class="alert alert-error text-sm">
-        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
-      </div>
-      {% endif %}
-      <button type="submit" class="btn btn-primary w-full mt-2">Create</button>
-    </form>
-  </div>
+{% extends 'base.html' %} {% load widget_tweaks %} {% block content %}
+<div class="container mx-auto max-w-2xl py-8">
+    <div class="card bg-base-200 border-base-300 border shadow-xl">
+        <div class="card-body p-6 md:p-8">
+            <h2 class="card-title mb-4 text-2xl font-bold">Create a Post</h2>
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="form-control">
+                    <label for="{{ form.thread.id_for_label }}" class="label">
+                        <span class="label-text">{{ form.thread.label }}</span>
+                    </label>
+                    {% render_field form.thread class="select select-bordered w-full" %} {% for error in
+                    form.thread.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ error }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="form-control">
+                    <label for="{{ form.title.id_for_label }}" class="label">
+                        <span class="label-text">{{ form.title.label }}</span>
+                    </label>
+                    {% render_field form.title class="input input-bordered w-full" placeholder="An interesting title"
+                    %} {% for error in form.title.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ error }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="form-control">
+                    <label for="{{ form.content.id_for_label }}" class="label">
+                        <span class="label-text">{{ form.content.label }}</span>
+                    </label>
+                    {% render_field form.content class="textarea textarea-bordered w-full" rows="6" placeholder="Share
+                    your thoughts..." %} {% for error in form.content.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ error }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6 shrink-0 stroke-current"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                    </svg>
+                    <span>{% for error in form.non_field_errors %}{{ error }}{% endfor %}</span>
+                </div>
+                {% endif %}
+
+                <div class="card-actions justify-end pt-4">
+                    <a href="{% url 'campus-home' %}" class="btn btn-ghost">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Create Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-{% endblock %} {% block scripts %}
-<script></script>
-{% endblock %}
+{% endblock content %}
