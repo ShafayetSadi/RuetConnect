@@ -5,6 +5,8 @@ from allauth.account.forms import SignupForm
 from .models import User, Profile
 import re
 from django.utils import timezone
+from django.utils.text import slugify
+import os
 
 
 class CustomSignupForm(SignupForm):
@@ -164,6 +166,16 @@ class AvatarUpdateForm(forms.ModelForm):
 
             if not avatar.content_type.startswith("image/"):
                 raise ValidationError("Please upload a valid image file.")
+
+            user = self.instance.user if hasattr(self.instance, "user") else None
+            if user:
+                username = slugify(user.username)
+                ext = os.path.splitext(avatar.name)[1]
+                if user.student_id:
+                    new_filename = f"{username}_{user.student_id}{ext}"
+                else:
+                    new_filename = f"{username}_{user.id}{ext}"
+                avatar.name = new_filename
 
         return avatar
 
