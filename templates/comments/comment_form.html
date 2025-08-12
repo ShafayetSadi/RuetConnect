@@ -1,4 +1,4 @@
-<form action="{% url 'comment-create' post.slug %}" method="post" class="space-y-4">
+<form action="{% url 'comment-create' slug=post.slug %}" method="post" class="space-y-4">
     {% csrf_token %}
     <div class="form-control">
         <label for="comment" class="label">

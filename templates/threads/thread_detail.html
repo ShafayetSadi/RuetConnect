@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div>
-                <h1 class="text-3xl font-bold">r/{{ thread.name }}</h1>
+                <h1 class="text-3xl font-bold">r/{{ thread.title }}</h1>
                 {% if thread.description %}
                 <p class="text-base-content/70 mt-2">{{ thread.description }}</p>
                 {% endif %}
@@ -30,7 +30,7 @@
     <div class="card bg-base-100 shadow-md">
         <div class="card-body text-center">
             <p class="text-base-content/60">No posts in this thread yet.</p>
-            <a href="{% url 'post-create' %}" class="btn btn-primary mt-4">Create First Post</a>
+            <a href="{% url 'thread-join' thread_name=thread.slug %}" class="btn btn-primary mt-4">Join thread to post</a>
         </div>
     </div>
     {% endfor %}
@@ -38,7 +38,7 @@
 {% endblock content %} {% block right_bar_content %}
 
 <!-- Right Sidebar -->
-<h3 class="card-title mb-4 text-lg">About r/{{ thread.name }}</h3>
+<h3 class="card-title mb-4 text-lg">About r/{{ thread.title }}</h3>
 
 {% if thread.description %}
 <p class="text-base-content/70 mb-4 text-sm">{{ thread.description }}</p>
@@ -85,7 +85,7 @@
                 <img src="{% static 'images/thread.jpg' %}" alt="Moderator" />
             </div>
         </div>
-        <span class="text-sm">u/{{ thread.owner.username }}</span>
+        <span class="text-sm">u/{{ thread.created_by.username }}</span>
     </div>
 </div>
 {% endblock right_bar_content %}

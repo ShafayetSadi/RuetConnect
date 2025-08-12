@@ -1,6 +1,9 @@
 <div class="flex items-center justify-center gap-4">
-    <form method="post" action="">
+    <form method="post" action="{% url 'vote' %}" hx-post="{% url 'vote' %}" hx-swap="none">
         {% csrf_token %}
+        <input type="hidden" name="model" value="post" />
+        <input type="hidden" name="object_id" value="{{ post.id }}" />
+        <input type="hidden" name="action" value="up" />
         <button type="submit" class="hover:bg-base-200 rounded-lg">
             <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" alt="Upvote">
                 <path
@@ -11,8 +14,11 @@
         </button>
     </form>
 
-    <form method="post" action="">
+    <form method="post" action="{% url 'vote' %}" hx-post="{% url 'vote' %}" hx-swap="none">
         {% csrf_token %}
+        <input type="hidden" name="model" value="post" />
+        <input type="hidden" name="object_id" value="{{ post.id }}" />
+        <input type="hidden" name="action" value="down" />
         <button type="submit" class="hover:bg-base-200 rounded-lg">
             <svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" alt="Downvote">
                 <path

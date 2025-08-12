@@ -1,0 +1,11 @@
+{% load static %}
+<ul class="bg-base-100 border-base-300 my-4 rounded-xl border">
+  {% for org in organizations %}
+  <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
+    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
+    <a class="truncate" href="{% url 'org-detail' slug=org.slug %}" title="{{ org.name }}">{{ org.name }}</a>
+  </li>
+  {% empty %}
+  <li class="px-4 py-2 text-base-content/60">No organizations yet.</li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card bg-base-200 border-base-300 border shadow max-w-xl mx-auto">
+  <div class="card-body">
+    <h1 class="text-2xl font-bold">Request to Join</h1>
+    <p class="opacity-80">You are requesting to join this organization. Your request will be reviewed by its moderators.</p>
+    <form method="post" class="mt-4">
+      {% csrf_token %}
+      <div class="alert alert-info">
+        Your role will be set to <strong>Member</strong> and status to <strong>Pending</strong>.
+      </div>
+      <div class="pt-4 flex justify-end gap-2">
+        <a class="btn btn-ghost" href="{{ request.META.HTTP_REFERER|default:'/' }}">Cancel</a>
+        <button class="btn btn-primary" type="submit">Send Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

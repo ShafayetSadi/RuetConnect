@@ -3,32 +3,32 @@
     <div class="card-body px-4 py-2">
         <!-- Post Header -->
         <div class="mb-2 flex items-center gap-2 text-sm">
-            <a href="{% url 'thread-detail' post.thread %}" class="flex items-center gap-2">
+            <a href="{% url 'thread-detail' thread_name=post.thread.slug %}" class="flex items-center gap-2">
                 <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <div>r/{{ post.thread }}</div>
+                <div>r/{{ post.thread.title }}</div>
             </a>
             <span class="opacity-60">•</span>
             <span>Posted by</span>
             <a class="link link-secondary ml-1" href="{% url 'profile' %}">u/{{ post.author }}</a>
-            <span class="text-base-content/60 ml-2">{{ post.date_posted | naturaltime }}</span>
+            <span class="text-base-content/60 ml-2">{{ post.created_at | naturaltime }}</span>
         </div>
         <!-- Post Title & Content -->
-        <a href="{% url 'post-detail' post.slug %}" class="block">
+        <a href="{% url 'post-detail' slug=post.slug %}" class="block">
             <h2 class="mb-1 text-lg font-semibold">{{ post.title }}</h2>
             <div class="text-base-content/70 line-clamp-4 text-sm">{{ post.content }}</div>
         </a>
         <!-- Post Action Buttons -->
         <div class="mt-1 flex flex-wrap items-center gap-4 text-sm">
             <div>{% include 'campus/vote.html' %}</div>
-            <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline">
+            <a href="{% url 'post-detail' slug=post.slug %}" class="btn btn-sm btn-outline">
                 <span>{{ post.comments.count }} comments</span>
             </a>
             {% if post.author == user %}
-            <a href="{% url 'post-update' post.id %}" class="btn btn-sm btn-outline">
+            <a href="{% url 'post-update' slug=post.slug %}" class="btn btn-sm btn-outline">
                 <span>Update</span>
             </a>
             {% endif %}
-            <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-outline">
+            <a href="{% url 'post-detail' slug=post.slug %}" class="btn btn-sm btn-outline">
                 <span>Share</span>
             </a>
         </div>

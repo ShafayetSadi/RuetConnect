@@ -1,87 +1,62 @@
-{% load lucide %} {%load static %}
+{% load lucide %} {% load static %} {% load campus_sidebar %}
 <nav class="box-border flex w-full flex-col">
     <div class="bg-base-100 my-4 rounded-xl shadow-sm">
+        {% with request.GET.tab|default:'home' as current_tab %}
         <ul class="flex flex-col">
-            <li class="bg-base-300 flex items-center gap-2 rounded-lg px-4 py-3">
-                {% lucide "house" size=24 class="text-base-content" %}
-                <span>Home</span>
+            <li>
+                <a href="/" class="flex items-center gap-2 rounded-lg px-4 py-3 transition-colors
+                    {% if current_tab == 'home' %}bg-base-300{% else %}hover:bg-base-200{% endif %}">
+                    {% lucide "house" size=24 class="text-base-content" %}
+                    <span class="font-medium">Home</span>
+                </a>
             </li>
-
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-3">
-                {% lucide "trending-up" size=24 class="text-base-content" %}
-                <span class="">Popular</span>
+            <li>
+                <a href="/?tab=popular" class="flex items-center gap-2 rounded-lg px-4 py-3 transition-colors
+                    {% if current_tab == 'popular' %}bg-base-300{% else %}hover:bg-base-200{% endif %}">
+                    {% lucide "trending-up" size=24 class="text-base-content" %}
+                    <span class="font-medium">Popular</span>
+                </a>
             </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-3">
-                {% lucide "list-check" size=24 class="text-base-content" %}
-                <span class="">All</span>
+            <li>
+                <a href="/?tab=all" class="flex items-center gap-2 rounded-lg px-4 py-3 transition-colors
+                    {% if current_tab == 'all' %}bg-base-300{% else %}hover:bg-base-200{% endif %}">
+                    {% lucide "list-check" size=24 class="text-base-content" %}
+                    <span class="font-medium">All</span>
+                </a>
             </li>
         </ul>
+        {% endwith %}
     </div>
     <hr class="bg-base-300 text-base-300 my-2 h-[1.5px] border-none" />
     <div class="pt-2">
         <h3 class="text-base-content/70 px-4 text-lg font-thin">RECENT</h3>
-        <ul class="bg-base-100 border-base-300 my-4 rounded-xl border">
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/golang</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/python</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/javascript</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/rust</a>
-            </li>
-        </ul>
+        {% sidebar_threads 5 %}
     </div>
     <hr class="bg-base-300 text-base-300 mx-2 h-[1.5px] border-none" />
-    <div class="pt-4">
-        <h3 class="text-base-content/70 px-4 text-lg font-thin">COMMUNITIES</h3>
+    <div class="pt-2">
+        <h3 class="text-base-content/70 px-4 text-lg font-thin">THREADS</h3>
         <ul class="bg-base-100 border-base-300 my-4 rounded-xl border">
             <li class="hover:bg-base-200 rounded-lg px-4 py-2">
                 <a href="{% url 'thread-create' %}" class="flex items-center gap-2">
                     {% lucide "plus" size=32 class="text-base-content" %}
-                    <span class="font-semibold">Create a community</span>
+                    <span class="font-semibold">Create a thread</span>
                 </a>
             </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/programming</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/linux</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/opensource</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/technology</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/programmingtools</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/programminghumor</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/learnpython</a>
-            </li>
-            <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
-                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
-                <a class="" href="">r/cs</a>
+        </ul>
+        {% sidebar_threads 10 %}
+    </div>
+    <hr class="bg-base-300 text-base-300 mx-2 h-[1.5px] border-none" />
+    <div class="pt-4">
+        <h3 class="text-base-content/70 px-4 text-lg font-thin">ORGANIZATIONS</h3>
+        <ul class="bg-base-100 border-base-300 my-4 rounded-xl border">
+            <li class="hover:bg-base-200 rounded-lg px-4 py-2">
+                <a href="{% url 'org-create' %}" class="flex items-center gap-2">
+                    {% lucide "plus" size=32 class="text-base-content" %}
+                    <span class="font-semibold">Create an organization</span>
+                </a>
             </li>
         </ul>
+        {% sidebar_organizations 10 %}
     </div>
 </nav>
 <hr class="bg-base-300 text-base-300 mx-2 h-[2px] border-none" />

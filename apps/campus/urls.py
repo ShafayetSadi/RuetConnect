@@ -10,6 +10,10 @@ from .views import (
     home,
     search,
 )
+from .views_members import (
+    OrganizationMembersListView,
+    OrganizationMembershipUpdateView,
+)
 
 urlpatterns = [
     path("", home, name="campus-home"),
@@ -27,5 +31,15 @@ urlpatterns = [
         "orgs/<slug:slug>/join/",
         OrganizationMembershipCreateView.as_view(),
         name="org-join",
+    ),
+    path(
+        "orgs/<slug:slug>/manage/members/",
+        OrganizationMembersListView.as_view(),
+        name="org-members",
+    ),
+    path(
+        "orgs/<slug:slug>/manage/members/<int:membership_id>/",
+        OrganizationMembershipUpdateView.as_view(),
+        name="org-membership-edit",
     ),
 ]

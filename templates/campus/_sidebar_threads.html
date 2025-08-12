@@ -1,0 +1,11 @@
+{% load static %}
+<ul class="bg-base-100 border-base-300 my-4 rounded-xl border">
+  {% for thread in threads %}
+  <li class="hover:bg-base-200 flex items-center gap-2 rounded-lg px-4 py-2">
+    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
+    <a class="truncate" href="{% url 'thread-detail' thread_name=thread.slug %}" title="{{ thread.title }}">r/{{ thread.title }}</a>
+  </li>
+  {% empty %}
+  <li class="px-4 py-2 text-base-content/60">No threads yet.</li>
+  {% endfor %}
+</ul>

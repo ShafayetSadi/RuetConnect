@@ -75,3 +75,36 @@ class Thread(BaseModel):
 
     def __str__(self):
         return self.title
+
+
+class ThreadMembership(BaseModel):
+    """User membership/role within a specific thread.
+
+    A user must be an active member of the parent Organization to be eligible for
+    thread membership.
+    """
+
+    ROLES = [
+        ("member", "Member"),
+        ("moderator", "Moderator"),
+    ]
+
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("active", "Active"),
+        ("inactive", "Inactive"),
+        ("banned", "Banned"),
+    ]
+
+    user = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
+    thread = models.ForeignKey("threads.Thread", on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=ROLES, default="member")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
+
+    class Meta:
+        db_table = "thread_memberships"
+        unique_together = ["user", "thread"]
+        indexes = [
+            models.Index(fields=["thread", "status", "role"]),
+            models.Index(fields=["user", "status", "role"]),
+        ]

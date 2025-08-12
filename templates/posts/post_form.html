@@ -42,6 +42,18 @@
                     {% endfor %}
                 </div>
 
+                <div class="form-control">
+                    <label for="{{ form.post_type.id_for_label }}" class="label">
+                        <span class="label-text">{{ form.post_type.label }}</span>
+                    </label>
+                    {% render_field form.post_type class="select select-bordered w-full" %}
+                    {% for error in form.post_type.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ error }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
                 {% if form.non_field_errors %}
                 <div class="alert alert-error">
                     <svg

@@ -36,7 +36,7 @@
 
 <!-- Right Sidebar -->
 {% block right_bar_content %}
-<h3 class="card-title mb-4 text-lg">About r/{{ post.thread.name }}</h3>
+<h3 class="card-title mb-4 text-lg">About r/{{ post.thread.title }}</h3>
 
 {% if post.thread.description %}
 <p class="text-base-content/70 mb-4 text-sm">{{ post.thread.description }}</p>
@@ -83,7 +83,7 @@
                 <img src="{% static 'images/thread.jpg' %}" alt="Moderator" />
             </div>
         </div>
-        <span class="text-sm">u/{{ post.thread.owner.username }}</span>
+        <span class="text-sm">u/{{ post.thread.created_by.username }}</span>
     </div>
 </div>
 {% endblock right_bar_content %}

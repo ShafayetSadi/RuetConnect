@@ -1,6 +1,9 @@
 <div class="flex items-center gap-1">
-    <form method="post" action="">
+    <form method="post" action="{% url 'vote' %}" hx-post="{% url 'vote' %}" hx-swap="none">
         {% csrf_token %}
+        <input type="hidden" name="model" value="comment" />
+        <input type="hidden" name="object_id" value="{{ comment.id }}" />
+        <input type="hidden" name="action" value="up" />
         <button type="submit" class="btn btn-ghost btn-xs p-1">
             <svg
                 height="16"
@@ -17,10 +20,13 @@
         </button>
     </form>
 
-    <div class="min-w-[1rem] text-center text-xs font-medium">{{ post.get_vote_count }}</div>
+    <div class="min-w-[1rem] text-center text-xs font-medium">{{ comment.score }}</div>
 
-    <form method="post" action="">
+    <form method="post" action="{% url 'vote' %}" hx-post="{% url 'vote' %}" hx-swap="none">
         {% csrf_token %}
+        <input type="hidden" name="model" value="comment" />
+        <input type="hidden" name="object_id" value="{{ comment.id }}" />
+        <input type="hidden" name="action" value="down" />
         <button type="submit" class="btn btn-ghost btn-xs p-1">
             <svg
                 height="16"

@@ -2,6 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 
 from apps.posts.models import Post
+from apps.threads.models import ThreadMembership
+from apps.campus.models import OrganizationMembership
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -9,7 +11,21 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     fields = ["thread", "title", "content"]
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
+        user = self.request.user
+        thread = form.cleaned_data.get("thread")
+        # Require org membership and thread membership
+        if not OrganizationMembership.objects.filter(
+            organization=thread.organization, user=user, status="active"
+        ).exists():
+            form.add_error(None, "You must be a member of the organization to post.")
+            return self.form_invalid(form)
+        if not ThreadMembership.objects.filter(
+            thread=thread, user=user, status="active"
+        ).exists():
+            form.add_error(None, "You must join this thread to post.")
+            return self.form_invalid(form)
+
+        form.instance.author = user
         return super().form_valid(form)
 
 

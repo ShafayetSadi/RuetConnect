@@ -8,7 +8,11 @@
         <div class="card-body text-center">
             <div class="avatar mb-4">
                 <div class="ring-primary ring-offset-base-100 h-32 w-32 rounded-full ring ring-offset-2">
-                    <img src="{{ user.profile.image.url }}" alt="profile picture" />
+                    {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="profile picture" />
+                    {% else %}
+                    <img src="{% static 'images/thread.jpg' %}" alt="profile picture" />
+                    {% endif %}
                 </div>
             </div>
             <h2 class="text-primary text-2xl font-bold">{{ user.first_name }} {{ user.last_name }}</h2>
@@ -63,7 +67,7 @@
 <div class="mb-4">
     <h4 class="mb-2 font-semibold">Address</h4>
     <p class="text-base-content/70 text-sm">
-        {{ user.profile.address }}, {{ user.profile.city }}, {{ user.profile.country }}
+        {{ user.profile.address }}
     </p>
 </div>
 

@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path("create/", views.ThreadCreateView.as_view(), name="thread-create"),
     path("<slug:thread_name>/", views.ThreadDetailView.as_view(), name="thread-detail"),
+    path("<slug:thread_name>/join/", views.ThreadJoinView.as_view(), name="thread-join"),
     path(
         "<slug:thread_name>/update/",
         views.ThreadUpdateView.as_view(),

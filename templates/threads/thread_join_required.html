@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card bg-base-200 border-base-300 border shadow">
+  <div class="card-body">
+    <h2 class="card-title">Join required</h2>
+    <p>You must join this thread to access it. Membership in the parent organization is required.</p>
+    <div class="pt-2">
+      <a href="{% url 'org-detail' slug=thread.organization.slug %}" class="btn btn-primary">Go to Organization</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -40,6 +40,9 @@ class Organization(BaseModel):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return f"/orgs/{self.slug}/"
+
 
 class OrganizationMembership(BaseModel):
     """User membership in organizations"""

@@ -5,7 +5,11 @@
             <!-- Avatar -->
             <div class="avatar">
                 <div class="h-8 w-8 rounded-full">
-                    <img src="{{ comment.author.profile.image.url }}" alt="Avatar" />
+                    {% if comment.author.profile.avatar %}
+                    <img src="{{ comment.author.profile.avatar.url }}" alt="Avatar" />
+                    {% else %}
+                    <img src="{% static 'images/thread.jpg' %}" alt="Avatar" />
+                    {% endif %}
                 </div>
             </div>
 
@@ -17,7 +21,7 @@
                         {{ comment.author.username }}
                     </a>
                     <span class="text-base-content/60">•</span>
-                    <span class="text-base-content/60">{{ comment.date_posted|naturaltime }}</span>
+                    <span class="text-base-content/60">{{ comment.created_at|naturaltime }}</span>
                 </div>
 
                 <!-- Comment Text -->

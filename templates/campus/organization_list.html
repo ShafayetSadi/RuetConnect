@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="space-y-4">
+  <h1 class="text-2xl font-bold">Organizations</h1>
+  {% for org in organizations %}
+  <div class="card bg-base-200 border-base-300 border shadow">
+    <div class="card-body">
+      <a class="link link-primary" href="{% url 'org-detail' slug=org.slug %}">{{ org.name }}</a>
+      <div class="text-sm text-base-content/70">{{ org.get_org_type_display }} • {{ org.member_count }} members</div>
+    </div>
+  </div>
+  {% empty %}
+  <p class="text-base-content/60">No organizations yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}
