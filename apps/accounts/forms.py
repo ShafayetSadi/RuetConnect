@@ -1,62 +1,383 @@
-from allauth.account.forms import SignupForm
+# apps/users/forms.py
 from django import forms
-
-from .models import Profile, User
+from django.core.exceptions import ValidationError
+from allauth.account.forms import SignupForm
+from .models import User, Profile
+import re
+from django.utils import timezone
 
 
 class CustomSignupForm(SignupForm):
-    first_name = forms.CharField(max_length=30, label="First Name")
-    last_name = forms.CharField(max_length=30, label="Last Name")
+    """Custom signup form to collect RUET-specific information"""
+
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(
+            attrs={"placeholder": "First Name", "class": "form-input"}
+        ),
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(
+            attrs={"placeholder": "Last Name", "class": "form-input"}
+        ),
+    )
+    user_type = forms.ChoiceField(
+        choices=User.USER_TYPES,
+        required=True,
+        initial="student",
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    department = forms.ChoiceField(
+        choices=User.DEPARTMENTS,
+        required=True,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
 
     def save(self, request):
-        user = super(CustomSignupForm, self).save(request)
+        user = super().save(request)
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
+        user.user_type = self.cleaned_data["user_type"]
+        user.department = self.cleaned_data["department"]
         user.save()
         return user
 
 
 class UserUpdateForm(forms.ModelForm):
+    """Form for updating basic user information"""
+
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "username", "email"]
-
-
-class UpdateProfileForm(forms.ModelForm):
-    github = forms.URLField(required=False, label="GitHub Profile URL")
-    linkedin = forms.URLField(required=False, label="LinkedIn Profile URL")
-    facebook = forms.URLField(required=False, label="Facebook Profile URL")
-    twitter = forms.URLField(required=False, label="Twitter Profile URL")
-    instagram = forms.URLField(required=False, label="Instagram Profile URL")
-
-    class Meta:
-        model = Profile
         fields = [
-            "bio",
-            "birth_date",
-            "image",
+            "first_name",
+            "last_name",
+            "username",
+            "email",
+            "student_id",
+            "user_type",
+            "department",
+            "series",
         ]
-        widgets = {"birth_date": forms.DateInput(attrs={"type": "date"})}
+        widgets = {
+            "first_name": forms.TextInput(
+                attrs={"class": "form-input", "placeholder": "First Name"}
+            ),
+            "last_name": forms.TextInput(
+                attrs={"class": "form-input", "placeholder": "Last Name"}
+            ),
+            "username": forms.TextInput(
+                attrs={"class": "form-input", "placeholder": "Username"}
+            ),
+            "email": forms.EmailInput(
+                attrs={"class": "form-input", "placeholder": "Email Address"}
+            ),
+            "student_id": forms.TextInput(
+                attrs={"class": "form-input", "placeholder": "Student/Employee ID"}
+            ),
+            "user_type": forms.Select(attrs={"class": "form-select"}),
+            "department": forms.Select(attrs={"class": "form-select"}),
+            "series": forms.TextInput(
+                attrs={"class": "form-input", "placeholder": "Series (e.g., 2019)"}
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Make email readonly if user has verified email
+        if (
+            self.instance
+            and self.instance.emailaddress_set.filter(verified=True).exists()
+        ):
+            self.fields["email"].widget.attrs["readonly"] = True
+            self.fields[
+                "email"
+            ].help_text = (
+                "Email is verified and cannot be changed. Contact admin if needed."
+            )
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        if not re.match(r"^[a-zA-Z0-9_]+$", username):
+            raise ValidationError(
+                "Username can only contain letters, numbers, and underscores."
+            )
+
+        # Check if username is taken by another user
+        if User.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
+            raise ValidationError("This username is already taken.")
+
+        return username
+
+    def clean_student_id(self):
+        student_id = self.cleaned_data.get("student_id")
+        if student_id:
+            # Check if student_id is taken by another user
+            if (
+                User.objects.filter(student_id=student_id)
+                .exclude(pk=self.instance.pk)
+                .exists()
+            ):
+                raise ValidationError("This Student/Employee ID is already registered.")
+        return student_id
+
+    def clean_series(self):
+        series = self.cleaned_data.get("series")
+        user_type = self.cleaned_data.get("user_type")
+
+        if user_type == "student" and series:
+            try:
+                series_year = int(series)
+                current_year = timezone.now().year
+                if series_year < 2000 or series_year > current_year + 1:
+                    raise ValidationError("Please enter a valid series year.")
+            except ValueError:
+                raise ValidationError("Series must be a valid year.")
+
+        return series
+
+
+class AvatarUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["avatar"]
+        widgets = {
+            "avatar": forms.FileInput(
+                attrs={
+                    "class": "form-file-input",
+                    "accept": "image/*",
+                    "hx-post": "",
+                    "hx-trigger": "change",
+                    "hx-target": "#avatar-preview",
+                    "hx-swap": "outerHTML",
+                }
+            )
+        }
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get("avatar")
+        if avatar:
+            if avatar.size > 5 * 1024 * 1024:
+                raise ValidationError("Image file too large. Maximum size is 5MB.")
+
+            if not avatar.content_type.startswith("image/"):
+                raise ValidationError("Please upload a valid image file.")
+
+        return avatar
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    bio = forms.CharField(
+        required=False,
+        widget=forms.Textarea(
+            attrs={"class": "form-textarea", "placeholder": "Tell us about yourself..."}
+        ),
+    )
+
+    birth_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(
+            attrs={
+                "class": "form-input",
+                "type": "date",
+            }
+        ),
+    )
+
+    facebook_url = forms.URLField(
+        required=False,
+        widget=forms.URLInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "https://facebook.com/username",
+            }
+        ),
+    )
+    linkedin_url = forms.URLField(
+        required=False,
+        widget=forms.URLInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "https://linkedin.com/in/username",
+            }
+        ),
+    )
+    github_url = forms.URLField(
+        required=False,
+        widget=forms.URLInput(
+            attrs={"class": "form-input", "placeholder": "https://github.com/username"}
+        ),
+    )
+    twitter_url = forms.URLField(
+        required=False,
+        widget=forms.URLInput(
+            attrs={"class": "form-input", "placeholder": "https://twitter.com/username"}
+        ),
+    )
+
+    interests_text = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "programming, robotics, AI (comma-separated)",
+            }
+        ),
+    )
+    skills_text = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Python, Django, JavaScript (comma-separated)",
+            }
+        ),
+    )
+
+    class Meta:
+        model = Profile
+        fields = ["phone", "address", "birth_date", "show_email", "show_phone", "bio"]
+        widgets = {
+            "phone": forms.TextInput(
+                attrs={"class": "form-input", "placeholder": "+880 1XXX-XXXXXX"}
+            ),
+            "address": forms.Textarea(
+                attrs={
+                    "class": "form-textarea",
+                    "placeholder": "Your address...",
+                    "rows": 3,
+                }
+            ),
+            "show_email": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
+            "show_phone": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
+            "bio": forms.Textarea(
+                attrs={
+                    "class": "form-textarea",
+                    "placeholder": "Tell us about yourself...",
+                    "rows": 4,
+                    "maxlength": 500,
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         if self.instance and self.instance.social_links:
-            social_links = self.instance.social_links
-            self.fields["github"].initial = social_links.get("github", "")
-            self.fields["linkedin"].initial = social_links.get("linkedin", "")
-            self.fields["facebook"].initial = social_links.get("facebook", "")
-            self.fields["twitter"].initial = social_links.get("twitter", "")
-            self.fields["instagram"].initial = social_links.get("instagram", "")
+            self.fields["facebook_url"].initial = self.instance.social_links.get(
+                "facebook", ""
+            )
+            self.fields["linkedin_url"].initial = self.instance.social_links.get(
+                "linkedin", ""
+            )
+            self.fields["github_url"].initial = self.instance.social_links.get(
+                "github", ""
+            )
+            self.fields["twitter_url"].initial = self.instance.social_links.get(
+                "twitter", ""
+            )
+
+        if self.instance and self.instance.interests:
+            self.fields["interests_text"].initial = ", ".join(self.instance.interests)
+
+        if self.instance and self.instance.skills:
+            self.fields["skills_text"].initial = ", ".join(self.instance.skills)
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        if phone:
+            phone_pattern = r"^(\+880|880|0)?[1-9]\d{8,10}$"
+            if not re.match(phone_pattern, phone):
+                raise ValidationError("Please enter a valid phone number.")
+        return phone
 
     def save(self, commit=True):
         profile = super().save(commit=False)
-        profile.social_links = {
-            "github": self.cleaned_data.get("github", ""),
-            "linkedin": self.cleaned_data.get("linkedin", ""),
-            "facebook": self.cleaned_data.get("facebook", ""),
-            "twitter": self.cleaned_data.get("twitter", ""),
-            "instagram": self.cleaned_data.get("instagram", ""),
-        }
+
+        # Handle birth_date from the form
+        birth_date = self.cleaned_data.get("birth_date")
+        if birth_date:
+            profile.birth_date = birth_date
+
+        social_links = {}
+        for platform in ["facebook", "linkedin", "github", "twitter"]:
+            url = self.cleaned_data.get(f"{platform}_url")
+            if url:
+                social_links[platform] = url
+        profile.social_links = social_links
+
+        interests_text = self.cleaned_data.get("interests_text", "")
+        if interests_text:
+            interests = [
+                interest.strip()
+                for interest in interests_text.split(",")
+                if interest.strip()
+            ]
+            profile.interests = interests
+        else:
+            profile.interests = []
+
+        skills_text = self.cleaned_data.get("skills_text", "")
+        if skills_text:
+            skills = [
+                skill.strip() for skill in skills_text.split(",") if skill.strip()
+            ]
+            profile.skills = skills
+        else:
+            profile.skills = []
+
         if commit:
             profile.save()
         return profile
+
+
+class PasswordChangeForm(forms.Form):
+    """Custom password change form with better validation"""
+
+    current_password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={"class": "form-input", "placeholder": "Current Password"}
+        )
+    )
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={"class": "form-input", "placeholder": "New Password"}
+        ),
+        help_text="Password must be at least 8 characters long.",
+    )
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={"class": "form-input", "placeholder": "Confirm New Password"}
+        )
+    )
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_current_password(self):
+        current_password = self.cleaned_data["current_password"]
+        if not self.user.check_password(current_password):
+            raise ValidationError("Current password is incorrect.")
+        return current_password
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get("new_password1")
+        password2 = self.cleaned_data.get("new_password2")
+
+        if password1 and password2:
+            if password1 != password2:
+                raise ValidationError("The two password fields didn't match.")
+
+        if len(password1) < 8:
+            raise ValidationError("Password must be at least 8 characters long.")
+
+        return password2
+
+    def save(self):
+        password = self.cleaned_data["new_password1"]
+        self.user.set_password(password)
+        self.user.save()
+        return self.user

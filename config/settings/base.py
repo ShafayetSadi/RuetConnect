@@ -133,23 +133,34 @@ AUTHENTICATION_BACKENDS = (
 SITE_ID = 1
 AUTH_USER_MODEL = "accounts.User"
 
-# Allauth settings
-ACCOUNT_FORMS = {"signup": "apps.accounts.forms.CustomSignupForm"}
+# Allauth configuration
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
-ACCOUNT_SIGNUP_FIELDS = ["email*", "username*"]
-
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
+ACCOUNT_USER_MODEL_EMAIL_FIELD = "email"
+ACCOUNT_SIGNUP_FIELDS = [
+    "first_name*",
+    "last_name*",
+    "email*",
+    "username*",
+    "password1*",
+    "password2*",
+]
+
+ACCOUNT_FORMS = {
+    "signup": "apps.accounts.forms.CustomSignupForm",
+}
 
 ACCOUNT_RATE_LIMITS = {
     "login_failed": "5/m",  # 5 attempts per minute
 }
 
-ACCOUNT_SIGNUP_REDIRECT_URL = "/"
+ACCOUNT_SIGNUP_REDIRECT_URL = "/accounts/login/"
+LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/"
-LOGOUT_REDIRECT_URL = "/accounts/login/"
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 TAILWIND_CLI_SRC_CSS = "static/css/source.css"
 TAILWIND_CLI_DIST_CSS = "css/dist/tailwind.min.css"

@@ -7,22 +7,18 @@
         </a>
         <form class="mx-4 max-w-md flex-1" autocomplete="off">
             {% csrf_token %}
-            <input
-                type="text"
-                name="query"
-                placeholder="Search Campus..."
-                class="input input-bordered bg-base-100 w-full"
-                hx-post="{% url 'campus-search' %}"
-                hx-trigger="input changed delay:500ms, search"
-                hx-target="#search-results"
-                hx-swap="innerHTML"
-            />
+            <input type="text" name="query" placeholder="Search Campus..."
+                class="input input-bordered bg-base-100 w-full" hx-post="{% url 'campus-search' %}"
+                hx-trigger="input changed delay:500ms, search" hx-target="#search-results" hx-swap="innerHTML" />
         </form>
         <div class="flex items-center gap-2">
             {% if user.is_authenticated %}
             <a class="btn btn-primary btn-sm" href="{% url 'post-create' %}">New Post</a>
             <a class="btn btn-ghost btn-sm" href="{% url 'profile' %}">Profile</a>
-            <a class="btn btn-error btn-sm" href="{% url 'account_logout' %}">Log Out</a>
+            <form action="{% url 'account_logout' %}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-error btn-sm" type="submit">Log Out</button>
+            </form>
             {% else %}
             <a class="btn btn-primary btn-sm" href="{% url 'account_login' %}">Log In</a>
             <a class="btn btn-outline btn-primary btn-sm hidden sm:inline-flex" href="{% url 'account_signup' %}">

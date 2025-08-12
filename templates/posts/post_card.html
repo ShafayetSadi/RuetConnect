@@ -1,13 +1,11 @@
 {% load static %} {% load humanize %}
 <div class="card bg-base-200 border-base-300 border shadow-xl">
-    <div class="card-body p-4 pb-2">
+    <div class="card-body px-4 py-2">
         <!-- Post Header -->
-        <div class="mb-2 flex items-center gap-2 text-xs">
-            <a href="{% url 'thread-detail' post.thread %}" class="avatar">
-                <img class="h-8 w-8 rounded-full" src="{{ post.thread.image.url }}" />
-            </a>
-            <a class="link link-primary px-2 font-bold" href="{% url 'thread-detail' post.thread %}">
-                r/{{ post.thread }}
+        <div class="mb-2 flex items-center gap-2 text-sm">
+            <a href="{% url 'thread-detail' post.thread %}" class="flex items-center gap-2">
+                <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
+                <div>r/{{ post.thread }}</div>
             </a>
             <span class="opacity-60">•</span>
             <span>Posted by</span>

@@ -18,7 +18,7 @@ tailwind:
 migrations:
 	uv run python manage.py makemigrations
 
-.PHONE: migrate
+.PHONY: migrate
 migrate:
 	uv run python manage.py migrate
 
