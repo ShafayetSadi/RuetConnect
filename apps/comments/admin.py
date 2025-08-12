@@ -7,8 +7,8 @@ from .models import Comment
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("author", "post", "content", "date_posted", "date_updated")
-    list_filter = ("author", "date_posted")
-    search_fields = ("author__username", "post__title")
-    date_hierarchy = "date_posted"
-    ordering = ("date_posted", "date_updated")
+    list_display = ("author", "post", "content", "created_at", "updated_at")
+    list_filter = ("author", "created_at")
+    search_fields = ("author__username", "post__title", "content")
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)

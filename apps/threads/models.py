@@ -1,44 +1,77 @@
 from django.db import models
+from django.utils.text import slugify
+from django.urls import reverse
+from shared.models import BaseModel
 
-from apps.accounts.models import User
 
+class Thread(BaseModel):
+    """Discussion threads/categories"""
 
-class Thread(models.Model):
-    name = models.SlugField(max_length=30, unique=True)
-    title = models.CharField(max_length=200, blank=True)
+    THREAD_TYPES = [
+        ("general", "General Discussion"),
+        ("announcement", "Announcement"),
+        ("event", "Event"),
+        ("academic", "Academic"),
+        ("project", "Project"),
+        ("job", "Job/Internship"),
+        ("help", "Help & Support"),
+    ]
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=250, unique=True, blank=True)
     description = models.TextField(blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(User, related_name="threads", on_delete=models.CASCADE)
-    subscribers = models.ManyToManyField(
-        User, through="Subscribed", related_name="subscribed_threads", blank=True
+    thread_type = models.CharField(
+        max_length=20, choices=THREAD_TYPES, default="general"
     )
-    image = models.ImageField(default="thread.jpg", upload_to="thread_pics", blank=True)
-    banner = models.ImageField(
-        default="banner.jpg", upload_to="thread_banners", blank=True
+    organization = models.ForeignKey(
+        "campus.Organization", on_delete=models.CASCADE, related_name="threads"
     )
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if not self.title:
-            self.title = self.name
-        super().save(*args, **kwargs)
-        from django.core.cache import cache
-
-        cache.delete("threads")
-        cache.delete("thread_{}".format(self.name))
-
-
-class Subscribed(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    thread = models.ForeignKey(Thread, on_delete=models.CASCADE)
-    subscribed_on = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey("accounts.User", on_delete=models.CASCADE)
+    is_pinned = models.BooleanField(default=False)
+    is_locked = models.BooleanField(default=False)
+    post_count = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ("user", "thread")
+        db_table = "threads"
+        ordering = ["-is_pinned", "-updated_at"]
+        indexes = [
+            models.Index(fields=["organization", "-updated_at"]),
+            models.Index(fields=["thread_type"]),
+            models.Index(fields=["-is_pinned", "-updated_at"]),
+        ]
+
+    def save(self, *args, **kwargs):
+        base_slug = slugify(self.title) if not self.slug else self.slug
+        if not base_slug:
+            base_slug = "thread"
+        base_slug = base_slug[:230]
+
+        if not self.slug:
+            slug_candidate = base_slug
+        else:
+            slug_candidate = self.slug
+
+        if self._state.adding:
+            counter = 1
+            while Thread.objects.filter(slug=slug_candidate).exists():
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug_candidate
+        else:
+            if Thread.objects.exclude(pk=self.pk).filter(slug=slug_candidate).exists():
+                counter = 1
+                slug_candidate = base_slug
+                while (
+                    Thread.objects.exclude(pk=self.pk).filter(slug=slug_candidate).exists()
+                ):
+                    slug_candidate = f"{base_slug}-{counter}"
+                    counter += 1
+                self.slug = slug_candidate
+
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("thread-detail", kwargs={"thread_name": self.slug})
 
     def __str__(self):
-        return "{} subscribed to {}".format(self.user, self.thread)
+        return self.title

@@ -9,6 +9,7 @@ urlpatterns = [
     path("r/", include("apps.threads.urls")),
     path("post/", include("apps.posts.urls")),
     path("comment/", include("apps.comments.urls")),
+    path("v/", include("apps.votes.urls")),
     path("admin/", admin.site.urls),
 ]
 

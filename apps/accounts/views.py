@@ -14,7 +14,7 @@ from apps.accounts.forms import (
 
 @login_required
 def profile(request):
-    posts = request.user.posts.all().order_by("-date_posted")
+    posts = request.user.posts.all().order_by("-created_at")
     context = {"posts": posts}
     return render(request, "account/profile.html", context)
 
