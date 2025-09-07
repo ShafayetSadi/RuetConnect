@@ -35,19 +35,22 @@
     <hr class="bg-base-300 text-base-300 mx-2 h-[1.5px] border-none" />
     <div class="pt-2">
         <h3 class="text-base-content/70 px-4 text-lg font-thin">THREADS</h3>
+        {% if user.is_authenticated %}
         <ul class="bg-base-100 border-base-300 my-4 rounded-xl border">
             <li class="hover:bg-base-200 rounded-lg px-4 py-2">
-                <a href="{% url 'thread-create' %}" class="flex items-center gap-2">
+                <a href="{% url 'thread-select-org' %}" class="flex items-center gap-2">
                     {% lucide "plus" size=32 class="text-base-content" %}
                     <span class="font-semibold">Create a thread</span>
                 </a>
             </li>
         </ul>
+        {% endif %}
         {% sidebar_threads 10 %}
     </div>
     <hr class="bg-base-300 text-base-300 mx-2 h-[1.5px] border-none" />
     <div class="pt-4">
         <h3 class="text-base-content/70 px-4 text-lg font-thin">ORGANIZATIONS</h3>
+        {% if user.is_authenticated %}
         <ul class="bg-base-100 border-base-300 my-4 rounded-xl border">
             <li class="hover:bg-base-200 rounded-lg px-4 py-2">
                 <a href="{% url 'org-create' %}" class="flex items-center gap-2">
@@ -56,6 +59,7 @@
                 </a>
             </li>
         </ul>
+        {% endif %}
         {% sidebar_organizations 10 %}
     </div>
 </nav>

@@ -1,17 +1,165 @@
-<div class="container mx-auto">
-    <div class="card bg-base-200 border-base-300 my-4 border shadow-xl">
-        <div class="card-body p-4">
-            <h2 class="card-title text-lg">Search Results</h2>
-            <div class="divide-base-300 divide-y">
-                {% for post in posts %}
-                <a href="{% url 'post-detail' post.slug %}" class="hover:bg-base-100 block rounded-lg px-2 py-2">
-                    <p class="font-semibold">{{ post.title }}</p>
-                    <p class="text-base-content/60 text-sm">by @{{ post.author }}</p>
-                </a>
-                {% empty %}
-                <p class="text-base-content/60 py-4 text-center">No results found.</p>
-                {% endfor %}
+{% extends 'base.html' %}
+{% block title %}Search Results - CampusConnect{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-4xl mx-auto">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold mb-2">Search Results</h1>
+        {% if search_query %}
+        <p class="text-lg text-base-content/70">Results for "{{ search_query }}"</p>
+        <div class="flex gap-4 text-sm text-base-content/60 mt-1">
+            {% if posts %}<span>{{ posts|length }} post{{ posts|length|pluralize:"s" }}</span>{% endif %}
+            {% if threads %}<span>{{ threads|length }} thread{{ threads|length|pluralize:"s" }}</span>{% endif %}
+            {% if organizations %}<span>{{ organizations|length }} organization{{ organizations|length|pluralize:"s"
+                }}</span>{% endif %}
+            {% if users %}<span>{{ users|length }} user{{ users|length|pluralize:"s" }}</span>{% endif %}
+        </div>
+        {% else %}
+        <p class="text-lg text-base-content/70">No search query provided</p>
+        {% endif %}
+    </div>
+
+    {% if search_query %}
+    <!-- Users -->
+    {% if users %}
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-3 text-primary">Users</h2>
+        <div class="grid gap-3">
+            {% for user in users %}
+            <div class="card bg-base-100 border border-base-300 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="flex items-center gap-4">
+                        <div class="avatar placeholder">
+                            <div class="bg-neutral text-neutral-content rounded-full w-12">
+                                <span class="text-lg">{{ user.first_name|first|upper }}{{ user.last_name|first|upper
+                                    }}</span>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-medium">{{ user.get_display_name }}</h3>
+                            <p class="text-base-content/60">@{{ user.username }}</p>
+                            {% if user.department %}
+                            <p class="text-sm text-base-content/40">{{ user.get_department_display }}</p>
+                            {% endif %}
+                            {% if user.student_id %}
+                            <p class="text-sm text-base-content/40">ID: {{ user.student_id }}</p>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'user-detail' username=user.username %}" class="btn btn-primary">View
+                            Profile</a>
+                    </div>
+                </div>
             </div>
+            {% endfor %}
         </div>
     </div>
+    {% endif %}
+
+    <!-- Organizations -->
+    {% if organizations %}
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-3 text-secondary">Organizations</h2>
+        <div class="grid gap-3">
+            {% for org in organizations %}
+            <div class="card bg-base-100 border border-base-300 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="flex items-center gap-4">
+                        <div class="avatar placeholder">
+                            <div class="bg-secondary text-secondary-content rounded-full w-12">
+                                <span class="text-lg">{{ org.name|first|upper }}</span>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-medium">{{ org.name }}</h3>
+                            <p class="text-base-content/60">{{ org.get_org_type_display }}</p>
+                            {% if org.description %}
+                            <p class="text-sm text-base-content/40 mt-2">{{ org.description }}</p>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'org-detail' slug=org.slug %}" class="btn btn-secondary">View Organization</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Threads -->
+    {% if threads %}
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-3 text-accent">Threads</h2>
+        <div class="grid gap-3">
+            {% for thread in threads %}
+            <div class="card bg-base-100 border border-base-300 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="flex items-center gap-4">
+                        <div class="avatar placeholder">
+                            <div class="bg-accent text-accent-content rounded-full w-12">
+                                <span class="text-lg">r/</span>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-medium">r/{{ thread.title }}</h3>
+                            <p class="text-base-content/60">{{ thread.organization.name }}</p>
+                            {% if thread.description %}
+                            <p class="text-sm text-base-content/40 mt-2">{{ thread.description }}</p>
+                            {% endif %}
+                            <p class="text-xs text-base-content/40 mt-1">{{ thread.post_count }} posts</p>
+                        </div>
+                        <a href="{% url 'thread-detail' thread_name=thread.slug %}" class="btn btn-accent">View
+                            Thread</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Posts -->
+    {% if posts %}
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-3 text-success">Posts</h2>
+        <div class="grid gap-3">
+        {% for post in posts %}
+            {% include 'posts/post_card_compact.html' %}
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- No Results -->
+    {% if not posts and not threads and not organizations and not users %}
+    <div class="card bg-base-200 border-base-300 border shadow-xl">
+        <div class="card-body text-center">
+            <p class="text-base-content/60">No results found matching "{{ search_query }}".</p>
+            <p class="text-sm text-base-content/40 mt-2">Try different keywords or check your spelling.</p>
+
+            <!-- Search Suggestions -->
+            <div class="mt-4">
+                <p class="text-sm text-base-content/60 mb-2">Try searching for:</p>
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <button class="btn btn-outline btn-sm" onclick="searchFor('RUET')">RUET</button>
+                    <button class="btn btn-outline btn-sm" onclick="searchFor('CSE')">CSE</button>
+                    <button class="btn btn-outline btn-sm" onclick="searchFor('EEE')">EEE</button>
+                    <button class="btn btn-outline btn-sm" onclick="searchFor('events')">Events</button>
+                    <button class="btn btn-outline btn-sm" onclick="searchFor('projects')">Projects</button>
+                </div>
+            </div>
+
+            <a href="{% url 'campus-home' %}" class="btn btn-primary mt-4">Back to Home</a>
+        </div>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="card bg-base-200 border-base-300 border shadow-xl">
+        <div class="card-body text-center">
+            <p class="text-base-content/60">Please enter a search term to find posts, threads, organizations, and users.
+            </p>
+            <a href="{% url 'campus-home' %}" class="btn btn-primary mt-4">Back to Home</a>
+        </div>
+    </div>
+    {% endif %}
 </div>
+{% endblock content %}

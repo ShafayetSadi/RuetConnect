@@ -13,6 +13,8 @@ from .views import (
 from .views_members import (
     OrganizationMembersListView,
     OrganizationMembershipUpdateView,
+    OrganizationPendingRequestsView,
+    OrganizationMembershipActionView,
 )
 
 urlpatterns = [
@@ -38,8 +40,18 @@ urlpatterns = [
         name="org-members",
     ),
     path(
+        "orgs/<slug:slug>/manage/requests/",
+        OrganizationPendingRequestsView.as_view(),
+        name="org-pending-requests",
+    ),
+    path(
         "orgs/<slug:slug>/manage/members/<int:membership_id>/",
         OrganizationMembershipUpdateView.as_view(),
         name="org-membership-edit",
+    ),
+    path(
+        "orgs/<slug:slug>/manage/requests/<int:membership_id>/action/",
+        OrganizationMembershipActionView.as_view(),
+        name="org-membership-action",
     ),
 ]

@@ -1,41 +1,144 @@
 {% load humanize %} {% load static %}
-<div class="card bg-base-200 border-base-300 my-2 border shadow-sm">
-    <div class="card-body p-4">
-        <div class="flex gap-3">
-            <!-- Avatar -->
-            <div class="avatar">
-                <div class="h-8 w-8 rounded-full">
-                    {% if comment.author.profile.avatar %}
-                    <img src="{{ comment.author.profile.avatar.url }}" alt="Avatar" />
-                    {% else %}
-                    <img src="{% static 'images/thread.jpg' %}" alt="Avatar" />
-                    {% endif %}
-                </div>
+<!-- Comment container with ID anchor -->
+<div id="comment-{{ comment.id }}" class="border border-transparent rounded-lg p-2 transition-all duration-300">
+<!-- Comment header -->
+<div class="text-base-content/70 flex flex-row items-center gap-2 text-xs mb-2">
+    <div class="avatar">
+        <div class="h-8 w-8 rounded-full">
+            {% if comment.author.profile.avatar %}
+            <img src="{{ comment.author.profile.avatar.url }}" alt="Avatar" />
+            {% else %}
+            <div
+                class="bg-primary text-primary-content flex h-full w-full items-center justify-center rounded-full text-xs font-bold"
+            >
+                {{ comment.author.first_name|first|upper }}{{ comment.author.last_name|first|upper }}
             </div>
-
-            <!-- Comment Content -->
-            <div class="flex-1">
-                <!-- Comment Header -->
-                <div class="mb-2 flex items-center gap-2 text-xs">
-                    <a href="{% url 'profile' %}" class="link link-primary font-semibold">
-                        {{ comment.author.username }}
-                    </a>
-                    <span class="text-base-content/60">•</span>
-                    <span class="text-base-content/60">{{ comment.created_at|naturaltime }}</span>
-                </div>
-
-                <!-- Comment Text -->
-                <div class="prose prose-sm mb-3 max-w-none">{{ comment.content|safe }}</div>
-
-                <!-- Comment Actions -->
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-1">{% include 'comments/comment_vote.html' %}</div>
-                    <div class="flex gap-2 text-xs">
-                        <button class="btn btn-ghost btn-xs">Reply</button>
-                        <button class="btn btn-ghost btn-xs">Share</button>
-                    </div>
-                </div>
-            </div>
+            {% endif %}
         </div>
     </div>
+    <a href="{% url 'user-detail' comment.author.username %}" class="text-base-content hover:text-primary text-sm font-semibold">
+        {{ comment.author.username }}
+    </a>
+    <span>•</span>
+    <span>{{ comment.created_at|naturaltime }}</span>
 </div>
+
+<!-- Threaded Content Area -->
+<div class="relative">
+    <!-- Comment content -->
+    <div class="prose prose-sm text-base-content/80 mb-3 ml-10 max-w-none">{{ comment.content|safe }}</div>
+
+    <!-- Action buttons row -->
+    <div class="flex items-center gap-2 mb-3">
+        <!-- Collapse/expand button -->
+        {% if comment.replies.all %}
+        <button
+            onclick="toggleCommentThread('comment-children-{{ comment.id }}', this)"
+            class="text-base-content/60 bg-base-100 border-base-300 hover:border-primary hover:text-primary flex h-6 w-6 items-center justify-center rounded border text-xs transition-all"
+            title="Collapse thread"
+        >
+            <svg fill="currentColor" height="12" width="12" viewBox="0 0 20 20" class="collapse-icon">
+                <path
+                    d="M14 10.625H6v-1.25h8v1.25ZM20 10a10 10 0 1 0-10 10 10.011 10.011 0 0 0 10-10Zm-1.25 0A8.75 8.75 0 1 1 10 1.25 8.76 8.76 0 0 1 18.75 10Z"
+                ></path>
+            </svg>
+            <svg fill="currentColor" height="12" width="12" viewBox="0 0 20 20" class="expand-icon hidden">
+                <path
+                    d="M10.625 14V6h-1.25v8h1.25ZM20 10a10 10 0 1 0-10 10 10.011 10.011 0 0 0 10-10Zm-1.25 0A8.75 8.75 0 1 1 10 1.25 8.76 8.76 0 0 1 18.75 10Z"
+                ></path>
+            </svg>
+        </button>
+        {% else %}
+        <div class="w-6"></div>
+        {% endif %}
+
+        <!-- Other action buttons -->
+        <div class="text-base-content/60 flex items-center gap-4 text-xs">
+            <div class="flex items-center">{% include 'comments/comment_vote.html' %}</div>
+            <button onclick="toggleReplyForm('reply-form-{{ comment.id }}')" class="hover:text-primary cursor-pointer font-medium">
+                Reply
+            </button>
+            <button onclick="openCommentShareModal({{ comment.id }})" class="hover:text-primary font-medium">Share</button>
+            <button class="hover:text-primary font-medium">Report</button>
+        </div>
+    </div>
+
+    <!-- Inline Reply Form (hidden by default) -->
+    <div id="reply-form-{{ comment.id }}" class="ml-10 mb-4 hidden">
+        <div class="bg-base-200 rounded-lg p-4 border border-base-300">
+            <div class="mb-3 text-sm text-base-content/70">
+                <span class="font-medium">Replying to {{ comment.author.username }}</span>
+            </div>
+            <form method="post" action="{% url 'comment-create' slug=comment.post.slug %}">
+                {% csrf_token %}
+                <input type="hidden" name="parent_id" value="{{ comment.id }}" />
+                <div class="mb-3">
+                    <textarea
+                        name="content"
+                        rows="3"
+                        class="textarea textarea-bordered w-full"
+                        placeholder="What are your thoughts?"
+                        required
+                    ></textarea>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">Comment</button>
+                    <button type="button" onclick="toggleReplyForm('reply-form-{{ comment.id }}')" class="btn btn-ghost btn-sm">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Nested replies with proper branch lines -->
+    {% if comment.replies.all %}
+    <div id="comment-children-{{ comment.id }}" class="ml-3 border-l-2 border-base-300 pl-4">
+        {% for reply in comment.replies.all %}
+            {% include 'comments/comment_card.html' with comment=reply %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Include Comment Share Modal -->
+{% include 'partials/comment_share_modal.html' %}
+</div>
+
+<script>
+    function toggleCommentThread(childrenId, button) {
+        const children = document.getElementById(childrenId);
+        const collapseIcon = button.querySelector(".collapse-icon");
+        const expandIcon = button.querySelector(".expand-icon");
+
+        if (children.style.display === "none") {
+            // Show children
+            children.style.display = "";
+            children.classList.remove("hidden");
+            collapseIcon.classList.remove("hidden");
+            expandIcon.classList.add("hidden");
+            button.title = "Collapse thread";
+        } else {
+            // Hide children
+            children.style.display = "none";
+            children.classList.add("hidden");
+            collapseIcon.classList.add("hidden");
+            expandIcon.classList.remove("hidden");
+            button.title = "Expand thread";
+        }
+    }
+
+    function toggleReplyForm(formId) {
+        const form = document.getElementById(formId);
+        if (form.classList.contains('hidden')) {
+            // Hide all other reply forms first
+            document.querySelectorAll('[id^="reply-form-"]').forEach(f => f.classList.add('hidden'));
+            // Show this form
+            form.classList.remove('hidden');
+            // Focus on the textarea
+            const textarea = form.querySelector('textarea');
+            if (textarea) textarea.focus();
+        } else {
+            // Hide this form
+            form.classList.add('hidden');
+        }
+    }
+</script>

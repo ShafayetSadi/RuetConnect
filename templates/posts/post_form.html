@@ -1,8 +1,16 @@
 {% extends 'base.html' %} {% load widget_tweaks %} {% block content %}
-<div class="container mx-auto max-w-2xl py-8">
+<div class="container mx-auto max-w-2xl">
     <div class="card bg-base-200 border-base-300 border shadow-xl">
         <div class="card-body p-6 md:p-8">
             <h2 class="card-title mb-4 text-2xl font-bold">Create a Post</h2>
+            {% if fixed_thread %}
+            <div class="alert alert-info mb-2">
+                <span>
+                    Posting to:
+                    <strong>r/{{ fixed_thread.title }}</strong>
+                </span>
+            </div>
+            {% endif %}
             <form method="post" class="space-y-4">
                 {% csrf_token %}
 
@@ -34,8 +42,8 @@
                     <label for="{{ form.content.id_for_label }}" class="label">
                         <span class="label-text">{{ form.content.label }}</span>
                     </label>
-                    {% render_field form.content class="textarea textarea-bordered w-full" rows="6" placeholder="Share
-                    your thoughts..." %} {% for error in form.content.errors %}
+                    {% render_field form.content class="textarea textarea-bordered w-full" rows="6"
+                    placeholder="Share your thoughts..." %} {% for error in form.content.errors %}
                     <label class="label">
                         <span class="label-text-alt text-error">{{ error }}</span>
                     </label>
@@ -46,8 +54,21 @@
                     <label for="{{ form.post_type.id_for_label }}" class="label">
                         <span class="label-text">{{ form.post_type.label }}</span>
                     </label>
-                    {% render_field form.post_type class="select select-bordered w-full" %}
-                    {% for error in form.post_type.errors %}
+                    {% render_field form.post_type class="select select-bordered w-full" %} {% for error in
+                    form.post_type.errors %}
+                    <label class="label">
+                        <span class="label-text-alt text-error">{{ error }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="form-control">
+                    <label for="{{ form.visibility.id_for_label }}" class="label">
+                        <span class="label-text">{{ form.visibility.label }}</span>
+                        <span class="label-text-alt">Who can see this post?</span>
+                    </label>
+                    {% render_field form.visibility class="select select-bordered w-full" %} {% for error in
+                    form.visibility.errors %}
                     <label class="label">
                         <span class="label-text-alt text-error">{{ error }}</span>
                     </label>

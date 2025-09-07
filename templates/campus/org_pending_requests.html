@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pending Requests - {{ organization.name }} - CampusConnect{% endblock %}
+
+{% block content %}
+<div class="container mx-auto max-w-6xl px-4">
+  <!-- Header Section -->
+  <div class="mb-6">
+    <div class="breadcrumbs text-sm text-base-content/70 mb-4">
+      <ul>
+        <li><a href="{% url 'campus-home' %}">Home</a></li>
+        <li><a href="{% url 'org-list' %}">Organizations</a></li>
+        <li><a href="{% url 'org-detail' slug=organization.slug %}">{{ organization.name }}</a></li>
+        <li>Pending Requests</li>
+      </ul>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-base-content mb-2">Pending Membership Requests</h1>
+        <p class="text-base-content/70">Review and approve new member requests for {{ organization.name }}</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'org-detail' slug=organization.slug %}" class="btn btn-ghost">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Organization
+        </a>
+        <a href="{% url 'org-members' slug=organization.slug %}" class="btn btn-outline">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+          </svg>
+          All Members
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Card -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="card bg-base-200 border-base-300 border shadow-lg">
+      <div class="card-body p-4 text-center">
+        <div class="text-2xl font-bold text-warning">{{ pending_requests|length }}</div>
+        <div class="text-sm text-base-content/70">Pending Requests</div>
+      </div>
+    </div>
+    <div class="card bg-base-200 border-base-300 border shadow-lg">
+      <div class="card-body p-4 text-center">
+        <div class="text-2xl font-bold text-success">{{ organization.member_count }}</div>
+        <div class="text-sm text-base-content/70">Active Members</div>
+      </div>
+    </div>
+    <div class="card bg-base-200 border-base-300 border shadow-lg">
+      <div class="card-body p-4 text-center">
+        <div class="text-2xl font-bold text-primary">{{ organization.get_org_type_display }}</div>
+        <div class="text-sm text-base-content/70">Organization Type</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Requests List -->
+  <div class="card bg-base-100 border-base-300 border shadow-lg">
+    <div class="card-body">
+      <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        </svg>
+        Membership Requests
+      </h2>
+
+      {% if pending_requests %}
+      <div class="space-y-4">
+        {% for request in pending_requests %}
+        <div class="bg-base-200 rounded-lg p-6 border border-base-300">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <!-- User Avatar -->
+              <div class="avatar">
+                <div class="w-12 h-12 rounded-full">
+                  {% if request.user.profile.avatar %}
+                  <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" />
+                  {% else %}
+                  <div class="bg-primary text-primary-content flex h-full w-full items-center justify-center rounded-full text-sm font-bold">
+                    {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- User Info -->
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <h3 class="font-semibold text-lg">{{ request.user.username }}</h3>
+                  <span class="badge badge-warning badge-sm">Pending</span>
+                </div>
+                <div class="text-sm text-base-content/70 space-y-1">
+                  {% if request.user.first_name or request.user.last_name %}
+                  <div>{{ request.user.first_name }} {{ request.user.last_name }}</div>
+                  {% endif %}
+                  {% if request.user.student_id %}
+                  <div>Student ID: {{ request.user.student_id }}</div>
+                  {% endif %}
+                  <div>Requested: {{ request.created_at|date:"M d, Y \a\t g:i A" }}</div>
+                  <div>Requested Role: <span class="font-medium">{{ request.get_role_display }}</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2">
+              <form method="post" action="{% url 'org-membership-action' slug=organization.slug membership_id=request.id %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to approve this membership request?')">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Approve
+                </button>
+              </form>
+
+              <form method="post" action="{% url 'org-membership-action' slug=organization.slug membership_id=request.id %}" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-error btn-sm" onclick="return confirm('Are you sure you want to reject this membership request?')">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Reject
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if is_paginated %}
+      <div class="mt-6 flex justify-center">
+        <div class="join">
+          {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn">«</a>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="join-item btn btn-active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}" class="join-item btn">{{ num }}</a>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="join-item btn">»</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-12">
+        <svg class="mx-auto h-16 w-16 text-base-content/40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-lg font-medium text-base-content mb-2">No Pending Requests</h3>
+        <p class="text-base-content/60">There are currently no pending membership requests for this organization.</p>
+        <div class="mt-4">
+          <a href="{% url 'org-detail' slug=organization.slug %}" class="btn btn-primary">
+            Back to Organization
+          </a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

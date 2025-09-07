@@ -1,36 +1,63 @@
+<!-- prettier-ignore -->
 {% extends 'base.html' %}
-{% load widget_tweaks %}
-{% block content %}
-<div class="card bg-base-200 border-base-300 border shadow max-w-2xl mx-auto">
-  <div class="card-body">
-    <h1 class="text-2xl font-bold">{{ view.object|yesno:"Edit Organization,Create Organization" }}</h1>
-    <form method="post" enctype="multipart/form-data" class="space-y-4">
-      {% csrf_token %}
-      <div>
-        <label class="label">{{ form.name.label }}</label>
-        {% render_field form.name class="input input-bordered w-full" %}
-      </div>
-      <div>
-        <label class="label">{{ form.org_type.label }}</label>
-        {% render_field form.org_type class="select select-bordered w-full" %}
-      </div>
-      <div>
-        <label class="label">{{ form.description.label }}</label>
-        {% render_field form.description class="textarea textarea-bordered w-full" rows="5" %}
-      </div>
-      <div>
-        <label class="label">Logo</label>
-        {% render_field form.logo class="file-input file-input-bordered w-full" %}
-      </div>
-      <div>
-        <label class="label">Cover Image</label>
-        {% render_field form.cover_image class="file-input file-input-bordered w-full" %}
-      </div>
-      <div class="pt-4 flex justify-end gap-2">
-        <a href="{% url 'org-list' %}" class="btn btn-ghost">Cancel</a>
-        <button class="btn btn-primary" type="submit">Save</button>
-      </div>
-    </form>
-  </div>
+
+{% block title %}{{ view.object|yesno:"Edit Organization,Create Organization" }} - RuetConnect{% endblock %}
+
+{% load static %}
+
+{% block head %}
+<style>
+    /* Override the base template's main scroll restrictions for login page */
+    main {
+        overflow-y: auto !important;
+        height: auto !important;
+    }
+
+    body {
+        overflow: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block left_side_bar %}
+{% endblock %}
+
+{% block main %}
+<!-- Complete override - no base template structure -->
+<div class="w-full max-w-2xl mb-8">
+    <div class="card bg-base-200 border-base-300 w-full border shadow-xl">
+        <div class="card-body">
+            <div class="text-center mb-6">
+                <div class="avatar mb-4">
+                    <div class="w-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                        <img src="{% static 'campus/RUET.png' %}" alt="RUET Logo" />
+                    </div>
+                </div>
+                <h2 class="card-title text-xl font-bold text-primary justify-center">
+                    {{ view.object|yesno:"Edit Organization,Create Organization" }}
+                </h2>
+                <p class="text-base-content/70 mt-1">
+                    {{ view.object|yesno:"Update your organization details,Set up your new organization" }}
+                </p>
+            </div>
+
+            <div>
+                {% include 'partials/form.html' with form=form submit_text=view.object|yesno:"Update Organization,Create Organization" enctype="multipart/form-data" %}
+            </div>
+
+            <div class="mt-6 text-center">
+                <a class="link link-secondary" href="{% url 'org-list' %}">← Back to Organizations</a>
+            </div>
+
+            {% if view.object %}
+            <div class="mt-4 text-center text-xs text-base-content/50">
+                <p>Organization created on {{ view.object.created_at|date:"F d, Y" }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block right_side_bar %}
 {% endblock %}

@@ -3,9 +3,25 @@
 <div class="card bg-base-200 border-base-300 border shadow">
   <div class="card-body">
     <h2 class="card-title">Join required</h2>
-    <p>You must join this thread to access it. Membership in the parent organization is required.</p>
+    <p>
+      {% if request.user.is_authenticated %}
+        {% if not is_org_member %}
+          You must be an active member of <strong>{{ thread.organization.name }}</strong> to view this thread.
+        {% else %}
+          You must join this thread to access it.
+        {% endif %}
+      {% else %}
+        You must sign in and be a member of the organization to access this thread.
+      {% endif %}
+    </p>
     <div class="pt-2">
       <a href="{% url 'org-detail' slug=thread.organization.slug %}" class="btn btn-primary">Go to Organization</a>
+      {% if request.user.is_authenticated and is_org_member %}
+      <form method="post" action="{% url 'thread-join' thread_name=thread.slug %}" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="btn ml-2">Join Thread</button>
+      </form>
+      {% endif %}
     </div>
   </div>
 </div>

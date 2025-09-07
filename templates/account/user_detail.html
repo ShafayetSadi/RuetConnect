@@ -1,0 +1,364 @@
+<!--prettier-ignore-->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-4">
+    <!-- Profile Card -->
+    <div class="card bg-base-200 border-base-300 border shadow-xl overflow-hidden">
+        <!-- Banner -->
+        <div class="from-primary to-secondary h-32 bg-gradient-to-r opacity-20"></div>
+
+        <div class="card-body relative text-center">
+            <!-- Profile Picture -->
+            <div class="absolute -top-16 left-1/2 transform -translate-x-1/2">
+                <div class="avatar">
+                    <div class="ring-primary ring-offset-base-200 h-32 w-32 rounded-full ring ring-offset-4">
+                    {% if profile_user.profile.avatar %}
+                    <img src="{{ profile_user.profile.avatar.url }}" alt="profile picture" class="rounded-full object-cover w-full h-full" />
+                    {% else %}
+                    <div class="bg-primary text-primary-content flex h-full w-full items-center justify-center rounded-full text-4xl font-bold">
+                        {{ profile_user.first_name|first|upper }}{{ profile_user.last_name|first|upper }}
+                    </div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="mt-20">
+                <h2 class="text-2xl font-bold mb-1">{{ profile_user.get_display_name }}</h2>
+                <p class="text-base-content/70 text-lg mb-1">@{{ profile_user.username }}</p>
+                {% if profile_user.profile.show_email %}
+                <p class="text-base-content/60 text-sm mb-4">{{ profile_user.email }}</p>
+                {% endif %}
+
+                <!-- User Type and Department -->
+                <div class="mt-4 flex flex-wrap justify-center gap-2">
+                    <span class="badge badge-primary badge-lg mb-0">{{ profile_user.get_user_type_display }}</span>
+                    {% if profile_user.department %}
+                    <span class="badge badge-secondary badge-lg">{{ profile_user.get_department_display }}</span>
+                    {% endif %}
+                    {% if profile_user.series %}
+                    <span class="badge badge-accent badge-lg">Series {{ profile_user.series }}</span>
+                    {% endif %}
+                    {% if profile_user.is_verified %}
+                    <span class="badge badge-success badge-lg">✓ Verified</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <div class="mt-4 flex flex-wrap justify-center gap-2">
+                {% if profile_user.profile.social_links.facebook %}
+                <a href="{{ profile_user.profile.social_links.facebook }}" target="_blank" class="btn btn-sm btn-outline">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                    Facebook
+                </a>
+                {% endif %}
+                {% if profile_user.profile.social_links.linkedin %}
+                <a href="{{ profile_user.profile.social_links.linkedin }}" target="_blank" class="btn btn-sm btn-outline">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                    LinkedIn
+                </a>
+                {% endif %}
+                {% if profile_user.profile.social_links.github %}
+                <a href="{{ profile_user.profile.social_links.github }}" target="_blank" class="btn btn-sm btn-outline">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                    GitHub
+                </a>
+                {% endif %}
+                {% if profile_user.profile.social_links.twitter %}
+                <a href="{{ profile_user.profile.social_links.twitter }}" target="_blank" class="btn btn-sm btn-outline">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.665 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                    </svg>
+                    Twitter
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Deprecated Tabs (Replaced by segmented routes) -->
+    <nav class="card bg-base-200 border-base-300 border shadow-xl overflow-x-auto">
+        <ul class="menu menu-horizontal p-2 flex-nowrap">
+            <li><a href="{% url 'user-posts' profile_user.username %}" class="font-semibold">Posts</a></li>
+            <li><a href="{% url 'user-comments' profile_user.username %}">Comments</a></li>
+            <li><a href="{% url 'user-upvoted' profile_user.username %}">Upvoted</a></li>
+            <li><a href="{% url 'user-downvoted' profile_user.username %}">Downvoted</a></li>
+        </ul>
+    </nav>
+
+    <!-- Content Sections -->
+    <div class="space-y-4">
+        <!-- Posts Tab Content -->
+        <div id="posts-content" class="tab-content active">
+            {% for post in posts %}
+            {% include 'posts/post_card.html' with post=post %}
+            {% empty %}
+            <div class="card bg-base-200 border-base-300 border shadow-xl">
+                <div class="card-body text-center py-12">
+                    <svg class="w-16 h-16 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-base-content/70 mb-2">No posts yet</h3>
+                    <p class="text-base-content/50">{{ profile_user.get_display_name }} hasn't posted anything yet.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Comments Tab Content -->
+        <div id="comments-content" class="tab-content hidden">
+            {% for comment in comments %}
+            <div class="card bg-base-200 border-base-300 border shadow-xl">
+                <div class="card-body">
+                    <div class="flex items-start space-x-3">
+                        <div class="avatar">
+                            <div class="w-10 rounded-full">
+                                {% if comment.author.profile.avatar %}
+                                <img src="{{ comment.author.profile.avatar.url }}" alt="Avatar" />
+                                {% else %}
+                                <div class="bg-primary text-primary-content flex h-full w-full items-center justify-center rounded-full text-sm font-bold">
+                                    {{ comment.author.first_name|first|upper }}{{ comment.author.last_name|first|upper }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="font-semibold">{{ comment.author.get_display_name }}</span>
+                                <span class="text-base-content/50 text-sm">{{ comment.created_at|timesince }} ago</span>
+                                <div class="badge badge-outline badge-sm">Comment</div>
+                            </div>
+                            <div class="prose max-w-none">
+                                <p>{{ comment.content }}</p>
+                            </div>
+                            <div class="mt-3">
+                                <a href="{% url 'post-detail' slug=comment.post.slug %}" class="text-primary hover:underline text-sm">
+                                    View post: {{ comment.post.title|truncatechars:50 }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="card bg-base-200 border-base-300 border shadow-xl">
+                <div class="card-body text-center py-12">
+                    <svg class="w-16 h-16 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-base-content/70 mb-2">No comments yet</h3>
+                    <p class="text-base-content/50">{{ profile_user.get_display_name }} hasn't commented on any posts yet.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Upvoted Tab Content -->
+        <div id="upvoted-content" class="tab-content hidden">
+            {% for vote in upvoted_posts %}
+            {% if vote.content_object %}
+            <div class="card bg-base-200 border-base-300 border shadow-xl">
+                <div class="card-body">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex flex-col items-center">
+                            <div class="bg-success/20 p-2 rounded-lg">
+                                <svg class="w-5 h-5 text-success" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L10 4.414 4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-success font-medium mt-1">Upvoted</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="font-semibold">{{ vote.content_object.title }}</span>
+                                <span class="text-base-content/50 text-sm">{{ vote.created_at|timesince }} ago</span>
+                            </div>
+                            <div class="prose max-w-none">
+                                <p>{{ vote.content_object.content|truncatechars:200 }}</p>
+                            </div>
+                            <div class="mt-3 flex items-center space-x-4">
+                                <a href="{% url 'post-detail' slug=vote.content_object.slug %}" class="text-primary hover:underline text-sm">
+                                    View post
+                                </a>
+                                <span class="text-base-content/50 text-sm">by {{ vote.content_object.author.get_display_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="card bg-base-200 border-base-300 border shadow-xl">
+                <div class="card-body text-center py-12">
+                    <svg class="w-16 h-16 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-base-content/70 mb-2">No upvoted posts</h3>
+                    <p class="text-base-content/50">{{ profile_user.get_display_name }} hasn't upvoted any posts yet.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Downvoted Tab Content -->
+        <div id="downvoted-content" class="tab-content hidden">
+            {% for vote in downvoted_posts %}
+            {% if vote.content_object %}
+            <div class="card bg-base-200 border-base-300 border shadow-xl">
+                <div class="card-body">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex flex-col items-center">
+                            <div class="bg-error/20 p-2 rounded-lg">
+                                <svg class="w-5 h-5 text-error" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L10 15.586l5.293-5.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <span class="text-xs text-error font-medium mt-1">Downvoted</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="font-semibold">{{ vote.content_object.title }}</span>
+                                <span class="text-base-content/50 text-sm">{{ vote.created_at|timesince }} ago</span>
+                            </div>
+                            <div class="prose max-w-none">
+                                <p>{{ vote.content_object.content|truncatechars:200 }}</p>
+                            </div>
+                            <div class="mt-3 flex items-center space-x-4">
+                                <a href="{% url 'post-detail' slug=vote.content_object.slug %}" class="text-primary hover:underline text-sm">
+                                    View post
+                                </a>
+                                <span class="text-base-content/50 text-sm">by {{ vote.content_object.author.get_display_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="card bg-base-200 border-base-300 border shadow-xl">
+                <div class="card-body text-center py-12">
+                    <svg class="w-16 h-16 mx-auto text-base-content/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-base-content/70 mb-2">No downvoted posts</h3>
+                    <p class="text-base-content/50">{{ profile_user.get_display_name }} hasn't downvoted any posts yet.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Removed legacy tab JavaScript and styles -->
+{% endblock content%}
+
+{% block right_bar_content %}
+<!-- Right Sidebar -->
+<h3 class="card-title mb-4 text-lg">About</h3>
+
+<!-- User Info -->
+<div class="mb-4">
+    <h4 class="mb-2 font-semibold">User Information</h4>
+    <div class="space-y-1 text-sm">
+    <p><span class="font-medium">Type:</span> {{ profile_user.get_user_type_display }}</p>
+    {% if profile_user.department %}
+    <p><span class="font-medium">Department:</span> {{ profile_user.get_department_display }}</p>
+    {% endif %}
+    {% if profile_user.series %}
+    <p><span class="font-medium">Series:</span> {{ profile_user.series }}</p>
+    {% endif %}
+    {% if profile_user.student_id %}
+    <p><span class="font-medium">ID:</span> {{ profile_user.student_id }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Address -->
+{% if profile_user.profile.address %}
+<div class="mb-4">
+    <h4 class="mb-2 font-semibold">Address</h4>
+    <p class="text-base-content/70 text-sm">{{ profile_user.profile.address }}</p>
+</div>
+{% endif %}
+
+<!-- Bio -->
+<div class="mb-4">
+    <h4 class="mb-2 font-semibold">Bio</h4>
+    {% if profile_user.profile.bio %}
+    <p class="text-base-content/70 text-sm">{{ profile_user.profile.bio }}</p>
+    {% else %}
+    <p class="text-base-content/50 text-sm italic">No bio added yet.</p>
+    {% endif %}
+</div>
+
+<!-- Interests -->
+{% if profile_user.profile.interests %}
+<div class="mb-4">
+    <h4 class="mb-2 font-semibold">Interests</h4>
+    <div class="flex flex-wrap gap-1">
+    {% for interest in profile_user.profile.interests %}
+        <span class="badge badge-outline badge-sm">{{ interest }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Skills -->
+{% if profile_user.profile.skills %}
+<div class="mb-4">
+    <h4 class="mb-2 font-semibold">Skills</h4>
+    <div class="flex flex-wrap gap-1">
+    {% for skill in profile_user.profile.skills %}
+        <span class="badge badge-primary badge-sm">{{ skill }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="divider"></div>
+
+<!-- Stats -->
+<div class="stats stats-vertical">
+    <div class="stat">
+        <div class="stat-title">Reputation</div>
+    <div class="stat-value text-primary">{{ profile_user.profile.reputation_score }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat-title">Posts</div>
+        <div class="stat-value text-secondary">{{ posts.count }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat-title">Comments</div>
+        <div class="stat-value text-accent">{{ comments.count }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat-title">Upvotes Given</div>
+        <div class="stat-value text-success">{{ upvoted_posts.count }}</div>
+    </div>
+    {% if profile_user.profile.birth_date %}
+    <div class="stat">
+        <div class="stat-title">Birth Date</div>
+        <div class="stat-value text-info">{{ profile_user.profile.birth_date|date:"M d" }}</div>
+    </div>
+    {% endif %}
+</div>
+
+{% if request.user.is_authenticated and request.user.pk == profile_user.pk %}
+<div class="mt-4">
+    <a href="{% url 'user-update' %}" class="btn btn-primary w-full">Update Profile</a>
+</div>
+{% endif %}
+{% endblock right_bar_content %}

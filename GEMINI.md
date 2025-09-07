@@ -18,7 +18,7 @@ This document provides context for the Gemini code assistant to understand the R
 
 ## Project Structure
 
-```
+```text
 ruetconnect/
 ├── apps/                    # Django applications
 │   ├── accounts/           # User authentication, profiles, custom user model

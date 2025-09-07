@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="space-y-4">
+  <!-- Profile Card -->
+  <div class="card bg-base-200 border-base-300 border shadow-xl overflow-hidden">
+    <div class="from-primary to-secondary h-32 bg-gradient-to-r opacity-20"></div>
+    <div class="card-body relative text-center">
+      <div class="absolute -top-16 left-1/2 transform -translate-x-1/2">
+        <div class="avatar">
+          <div class="ring-primary ring-offset-base-200 h-32 w-32 rounded-full ring ring-offset-4">
+            {% if profile_user.profile.avatar %}
+              <img src="{{ profile_user.profile.avatar.url }}" alt="profile picture" class="rounded-full object-cover w-full h-full" />
+            {% else %}
+              <div class="bg-primary text-primary-content flex h-full w-full items-center justify-center rounded-full text-4xl font-bold">
+                {{ profile_user.first_name|first|upper }}{{ profile_user.last_name|first|upper }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="mt-20">
+        <h2 class="text-2xl font-bold mb-1">{{ profile_user.get_display_name }}</h2>
+        <p class="text-base-content/70 text-lg mb-1">@{{ profile_user.username }}</p>
+        {% if profile_user.profile.show_email %}
+          <p class="text-base-content/60 text-sm mb-4">{{ profile_user.email }}</p>
+        {% endif %}
+        <div class="mt-4 flex flex-wrap justify-center gap-2">
+          <span class="badge badge-primary badge-lg mb-0">{{ profile_user.get_user_type_display }}</span>
+          {% if profile_user.department %}<span class="badge badge-secondary badge-lg">{{ profile_user.get_department_display }}</span>{% endif %}
+          {% if profile_user.series %}<span class="badge badge-accent badge-lg">Series {{ profile_user.series }}</span>{% endif %}
+          {% if profile_user.is_verified %}<span class="badge badge-success badge-lg">✓ Verified</span>{% endif %}
+        </div>
+      </div>
+      <div class="mt-4 flex flex-wrap justify-center gap-2">
+        {% if profile_user.profile.social_links.facebook %}<a href="{{ profile_user.profile.social_links.facebook }}" target="_blank" class="btn btn-sm btn-outline">Facebook</a>{% endif %}
+        {% if profile_user.profile.social_links.linkedin %}<a href="{{ profile_user.profile.social_links.linkedin }}" target="_blank" class="btn btn-sm btn-outline">LinkedIn</a>{% endif %}
+        {% if profile_user.profile.social_links.github %}<a href="{{ profile_user.profile.social_links.github }}" target="_blank" class="btn btn-sm btn-outline">GitHub</a>{% endif %}
+        {% if profile_user.profile.social_links.twitter %}<a href="{{ profile_user.profile.social_links.twitter }}" target="_blank" class="btn btn-sm btn-outline">Twitter</a>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub-navigation -->
+  <nav class="card bg-base-200 border-base-300 border shadow overflow-x-auto">
+    <ul class="menu menu-horizontal p-2 flex-row flex-nowrap">
+      <li>
+        <a href="{% url 'user-posts' profile_user.username %}" class="{% if section == 'posts' %}active font-semibold{% endif %}">Posts</a>
+      </li>
+      <li>
+        <a href="{% url 'user-comments' profile_user.username %}" class="{% if section == 'comments' %}active font-semibold{% endif %}">Comments</a>
+      </li>
+      <li>
+        <a href="{% url 'user-upvoted' profile_user.username %}" class="{% if section == 'upvoted' %}active font-semibold{% endif %}">Upvoted</a>
+      </li>
+      <li>
+        <a href="{% url 'user-downvoted' profile_user.username %}" class="{% if section == 'downvoted' %}active font-semibold{% endif %}">Downvoted</a>
+      </li>
+    </ul>
+  </nav>
+
+  {% block profile_section %}{% endblock profile_section %}
+</div>
+{% endblock content %}
+
+{% block right_bar_content %}
+<h3 class="card-title mb-4 text-lg">About</h3>
+<div class="mb-4"><h4 class="mb-2 font-semibold">User Information</h4>
+  <div class="space-y-1 text-sm">
+    <p><span class="font-medium">Type:</span> {{ profile_user.get_user_type_display }}</p>
+    {% if profile_user.department %}<p><span class="font-medium">Department:</span> {{ profile_user.get_department_display }}</p>{% endif %}
+    {% if profile_user.series %}<p><span class="font-medium">Series:</span> {{ profile_user.series }}</p>{% endif %}
+    {% if profile_user.student_id %}<p><span class="font-medium">ID:</span> {{ profile_user.student_id }}</p>{% endif %}
+  </div>
+</div>
+{% if profile_user.profile.address %}<div class="mb-4"><h4 class="mb-2 font-semibold">Address</h4><p class="text-base-content/70 text-sm">{{ profile_user.profile.address }}</p></div>{% endif %}
+<div class="mb-4"><h4 class="mb-2 font-semibold">Bio</h4>
+  {% if profile_user.profile.bio %}<p class="text-base-content/70 text-sm">{{ profile_user.profile.bio }}</p>{% else %}<p class="text-base-content/50 text-sm italic">No bio added yet.</p>{% endif %}
+</div>
+{% if profile_user.profile.interests %}<div class="mb-4"><h4 class="mb-2 font-semibold">Interests</h4><div class="flex flex-wrap gap-1">{% for interest in profile_user.profile.interests %}<span class="badge badge-outline badge-sm">{{ interest }}</span>{% endfor %}</div></div>{% endif %}
+{% if profile_user.profile.skills %}<div class="mb-4"><h4 class="mb-2 font-semibold">Skills</h4><div class="flex flex-wrap gap-1">{% for skill in profile_user.profile.skills %}<span class="badge badge-primary badge-sm">{{ skill }}</span>{% endfor %}</div></div>{% endif %}
+<div class="divider"></div>
+<div class="stats stats-vertical">
+  <div class="stat"><div class="stat-title">Reputation</div><div class="stat-value text-primary">{{ profile_user.profile.reputation_score }}</div></div>
+  <div class="stat"><div class="stat-title">Posts</div><div class="stat-value text-secondary">{{ total_posts }}</div></div>
+  <div class="stat"><div class="stat-title">Comments</div><div class="stat-value text-accent">{{ total_comments }}</div></div>
+  <div class="stat"><div class="stat-title">Upvotes Given</div><div class="stat-value text-success">{{ total_upvotes_given }}</div></div>
+  {% if profile_user.profile.birth_date %}<div class="stat"><div class="stat-title">Birth Date</div><div class="stat-value text-info">{{ profile_user.profile.birth_date|date:'M d' }}</div></div>{% endif %}
+</div>
+{% if request.user.is_authenticated and request.user.pk == profile_user.pk %}
+  <div class="mt-4"><a href="{% url 'user-update' %}" class="btn btn-primary w-full">Update Profile</a></div>
+{% endif %}
+{% endblock right_bar_content %}

@@ -1,91 +1,112 @@
-{% extends "base.html" %} {% block content %} {% load humanize %} {% load static %}
+{% extends "base.html" %}
+{% block content %}
+{% load humanize %}
+{% load static %}
 <!-- Thread Header -->
-<div class="card bg-base-100 overflow-hidden shadow-md">
+<div class="card bg-base-200 border-base-300 border shadow-xl overflow-hidden">
     <!-- Banner -->
     <div class="from-primary to-secondary h-36 bg-gradient-to-r opacity-20"></div>
 
     <!-- Thread Info -->
     <div class="card-body">
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-6">
             <div class="avatar">
-                <div class="ring-primary ring-offset-base-100 h-20 w-20 rounded-full ring ring-offset-2">
+                <div class="ring-primary ring-offset-base-200 h-16 w-16 rounded-full ring ring-offset-2">
                     <img src="{% static 'images/thread.jpg' %}" alt="Thread avatar" />
                 </div>
             </div>
             <div>
-                <h1 class="text-3xl font-bold">r/{{ thread.title }}</h1>
+                <h1 class="text-2xl font-bold">r/{{ thread.title }}</h1>
                 {% if thread.description %}
                 <p class="text-base-content/70 mt-2">{{ thread.description }}</p>
                 {% endif %}
             </div>
+            <div class="ml-auto flex items-center gap-2">
+              {% if can_join_thread %}
+                <form method="post" action="{% url 'thread-join' thread_name=thread.slug %}">
+                  {% csrf_token %}
+                  <button class="btn btn-primary btn-sm">Join Thread</button>
+                </form>
+              {% elif can_join_org %}
+                <a href="{% url 'org-join' slug=thread.organization.slug %}" class="btn btn-primary btn-sm">Join Organization</a>
+              {% endif %}
+              {% if is_thread_member %}
+                <a href="{% url 'post-create' %}?thread={{ thread.slug }}" class="btn btn-outline btn-sm">Create Post</a>
+              {% endif %}
+            </div>
         </div>
     </div>
 </div>
 
-<div class="divider"></div>
+<div class="divider my-6"></div>
+
+{% if is_thread_member %}
+<!-- Sort Tabs -->
+<div class="sticky top-0 z-10 -mt-2 mb-4 bg-base-200/80 backdrop-blur mt-6">
+  <div class="flex items-center text-sm opacity-70 px-4 py-2 gap-4">
+    <span class="mr-2">Sort by:</span>
+    <a href="?tab=popular" class="badge px-4 py-2 {% if request.GET.tab|default:'popular' == 'popular' %}badge-primary{% else %}badge-ghost{% endif %}">Popular</a>
+    <a href="?tab=latest" class="badge px-4 py-2 {% if request.GET.tab == 'latest' %}badge-primary{% else %}badge-ghost{% endif %}">Latest</a>
+  </div>
+</div>
 
 <!-- Posts List -->
 <div class="space-y-4">
-    {% for post in thread.posts.all %} {% include 'posts/post_card.html' %} {% empty %}
-    <div class="card bg-base-100 shadow-md">
-        <div class="card-body text-center">
-            <p class="text-base-content/60">No posts in this thread yet.</p>
-            <a href="{% url 'thread-join' thread_name=thread.slug %}" class="btn btn-primary mt-4">Join thread to post</a>
-        </div>
-    </div>
+    {% for post in posts %}
+      {% include 'posts/post_card.html' %}
+    {% empty %}
+      <div class="card bg-base-200 border-base-300 border shadow-xl">
+          <div class="card-body text-center">
+              <p class="text-base-content/60">No posts in this thread yet.</p>
+              <a href="{% url 'post-create' %}?thread={{ thread.slug }}" class="btn btn-primary mt-4">Create the first post</a>
+          </div>
+      </div>
     {% endfor %}
 </div>
-{% endblock content %} {% block right_bar_content %}
-
-<!-- Right Sidebar -->
-<h3 class="card-title mb-4 text-lg">About r/{{ thread.title }}</h3>
-
-{% if thread.description %}
-<p class="text-base-content/70 mb-4 text-sm">{{ thread.description }}</p>
-{% endif %}
-
-<div class="divider"></div>
-
-<!-- Stats -->
-<div class="stats stats-vertical">
-    <div class="stat">
-        <div class="stat-title">Members</div>
-        <div class="stat-value text-primary">1</div>
-    </div>
-    <div class="stat">
-        <div class="stat-title">Online</div>
-        <div class="stat-value text-secondary">1</div>
-    </div>
-    <div class="stat">
-        <div class="stat-title">Posts</div>
-        <div class="stat-value text-accent">{{ thread.posts.count }}</div>
-    </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- Rules -->
-<div class="mb-4">
-    <h4 class="mb-2 font-semibold">Rules</h4>
-    <ul class="text-base-content/70 list-inside list-disc space-y-1 text-sm">
-        <li>Be respectful</li>
-        <li>Stay on topic</li>
-        <li>No spam</li>
-    </ul>
-</div>
-
-<div class="divider"></div>
-
-<!-- Moderators -->
-<div>
-    <h4 class="mb-2 font-semibold">Moderators</h4>
-    <div class="flex items-center gap-2">
-        <div class="avatar">
-            <div class="h-6 w-6 rounded-full">
-                <img src="{% static 'images/thread.jpg' %}" alt="Moderator" />
-            </div>
+{% else %}
+<!-- Visitor Page for Non-Members -->
+<div class="card bg-base-200 border-base-300 border shadow-xl mt-6">
+  <div class="card-body">
+    <div class="text-center">
+      <div class="mb-6">
+        <div class="avatar mb-4">
+          <div class="ring-primary ring-offset-base-200 h-16 w-16 rounded-full ring ring-offset-2">
+            <img src="{% static 'images/thread.jpg' %}" alt="Thread avatar" />
+          </div>
         </div>
-        <span class="text-sm">u/{{ thread.created_by.username }}</span>
+        <h3 class="text-2xl font-bold mb-2">Welcome to r/{{ thread.title }}</h3>
+        {% if thread.description %}
+        <p class="text-base-content/70 mb-4">{{ thread.description }}</p>
+        {% endif %}
+      </div>
+
+      {% if not request.user.is_authenticated %}
+        <h4 class="text-lg font-semibold mb-2">Join the Conversation</h4>
+        <p class="text-base-content/60 mb-4">Sign in to join this thread and participate in discussions.</p>
+        <div class="flex gap-2 justify-center">
+          <a href="{% url 'account_login' %}" class="btn btn-primary">Sign In</a>
+          <a href="{% url 'account_signup' %}" class="btn btn-outline">Sign Up</a>
+        </div>
+      {% elif not is_org_member %}
+        <h4 class="text-lg font-semibold mb-2">Organization Membership Required</h4>
+        <p class="text-base-content/60 mb-4">You need to be a member of <strong>{{ thread.organization.name }}</strong> to join this thread and see posts.</p>
+        {% if can_join_org %}
+        <a href="{% url 'org-join' slug=thread.organization.slug %}" class="btn btn-primary">Join {{ thread.organization.name }}</a>
+        {% else %}
+        <p class="text-warning text-sm">Your organization membership request is pending approval.</p>
+        {% endif %}
+      {% elif not is_thread_member %}
+        <h4 class="text-lg font-semibold mb-2">Thread Membership Required</h4>
+        <p class="text-base-content/60 mb-4">Join this thread to see posts and participate in discussions.</p>
+        <form method="post" action="{% url 'thread-join' thread_name=thread.slug %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">Join r/{{ thread.title }}</button>
+        </form>
+      {% endif %}
     </div>
+  </div>
 </div>
+{% endif %}
+{% endblock content %} {% block right_bar_content %}
+{% include 'threads/_thread_sidebar.html' %}
 {% endblock right_bar_content %}

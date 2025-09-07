@@ -1,42 +1,61 @@
-# apps/users/forms.py
 from django import forms
 from django.core.exceptions import ValidationError
-from allauth.account.forms import SignupForm
+from django.db import IntegrityError
+from allauth.account.forms import SignupForm, LoginForm
 from .models import User, Profile
 import re
 from django.utils import timezone
 from django.utils.text import slugify
 import os
 
+from shared.forms import DaisyUIFormMixin
 
-class CustomSignupForm(SignupForm):
+
+class CustomSignupForm(DaisyUIFormMixin, SignupForm):
     """Custom signup form to collect RUET-specific information"""
 
     first_name = forms.CharField(
         max_length=30,
         required=True,
-        widget=forms.TextInput(
-            attrs={"placeholder": "First Name", "class": "form-input"}
-        ),
+        widget=forms.TextInput(attrs={"placeholder": "Enter your first name"}),
+        help_text="Your legal first name as it appears on official documents",
     )
     last_name = forms.CharField(
         max_length=30,
         required=True,
-        widget=forms.TextInput(
-            attrs={"placeholder": "Last Name", "class": "form-input"}
-        ),
+        widget=forms.TextInput(attrs={"placeholder": "Enter your last name"}),
+        help_text="Your legal last name as it appears on official documents",
     )
     user_type = forms.ChoiceField(
         choices=User.USER_TYPES,
         required=True,
         initial="student",
-        widget=forms.Select(attrs={"class": "form-select"}),
+        help_text="Select your role at RUET",
     )
     department = forms.ChoiceField(
         choices=User.DEPARTMENTS,
         required=True,
-        widget=forms.Select(attrs={"class": "form-select"}),
+        help_text="Your academic department at RUET",
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Update email field
+        self.fields["email"].widget.attrs.update(
+            {"placeholder": "Enter your email address"}
+        )
+        self.fields["email"].help_text = "Use your institutional email if available"
+
+        # Update password fields
+        self.fields["password1"].widget.attrs.update(
+            {"placeholder": "Create a strong password"}
+        )
+        self.fields["password1"].help_text = "Must be at least 8 characters long"
+
+        self.fields["password2"].widget.attrs.update(
+            {"placeholder": "Confirm your password"}
+        )
+        self.fields["password2"].help_text = "Enter the same password again"
 
     def save(self, request):
         user = super().save(request)
@@ -48,7 +67,26 @@ class CustomSignupForm(SignupForm):
         return user
 
 
-class UserUpdateForm(forms.ModelForm):
+class CustomLoginForm(DaisyUIFormMixin, LoginForm):
+    """Custom login form with DaisyUI styling"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["login"].widget.attrs.update(
+            {"placeholder": "Enter your username or email"}
+        )
+        self.fields["login"].help_text = "Use the email or username you registered with"
+
+        self.fields["password"].widget.attrs.update(
+            {"placeholder": "Enter your password"}
+        )
+
+        # Make the remember checkbox prettier
+        if "remember" in self.fields:
+            self.fields["remember"].help_text = "Keep me signed in on this device"
+
+
+class UserUpdateForm(DaisyUIFormMixin, forms.ModelForm):
     """Form for updating basic user information"""
 
     class Meta:
@@ -64,26 +102,12 @@ class UserUpdateForm(forms.ModelForm):
             "series",
         ]
         widgets = {
-            "first_name": forms.TextInput(
-                attrs={"class": "form-input", "placeholder": "First Name"}
-            ),
-            "last_name": forms.TextInput(
-                attrs={"class": "form-input", "placeholder": "Last Name"}
-            ),
-            "username": forms.TextInput(
-                attrs={"class": "form-input", "placeholder": "Username"}
-            ),
-            "email": forms.EmailInput(
-                attrs={"class": "form-input", "placeholder": "Email Address"}
-            ),
-            "student_id": forms.TextInput(
-                attrs={"class": "form-input", "placeholder": "Student/Employee ID"}
-            ),
-            "user_type": forms.Select(attrs={"class": "form-select"}),
-            "department": forms.Select(attrs={"class": "form-select"}),
-            "series": forms.TextInput(
-                attrs={"class": "form-input", "placeholder": "Series (e.g., 2019)"}
-            ),
+            "first_name": forms.TextInput(attrs={"placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last Name"}),
+            "username": forms.TextInput(attrs={"placeholder": "Username"}),
+            "email": forms.EmailInput(attrs={"placeholder": "Email Address"}),
+            "student_id": forms.TextInput(attrs={"placeholder": "Student/Employee ID"}),
+            "series": forms.TextInput(attrs={"placeholder": "Series (e.g., 2019)"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -94,6 +118,7 @@ class UserUpdateForm(forms.ModelForm):
             and self.instance.emailaddress_set.filter(verified=True).exists()
         ):
             self.fields["email"].widget.attrs["readonly"] = True
+            self.fields["email"].widget.attrs["class"] += " input-disabled"
             self.fields[
                 "email"
             ].help_text = (
@@ -107,22 +132,30 @@ class UserUpdateForm(forms.ModelForm):
                 "Username can only contain letters, numbers, and underscores."
             )
 
-        # Check if username is taken by another user
         if User.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
             raise ValidationError("This username is already taken.")
 
         return username
 
+    def save(self, commit=True):
+        try:
+            return super().save(commit=commit)
+        except IntegrityError as e:
+            if "username" in str(e).lower():
+                raise ValidationError(
+                    "This username is already taken. Please choose another."
+                )
+            raise
+
     def clean_student_id(self):
         student_id = self.cleaned_data.get("student_id")
         if student_id:
-            # Check if student_id is taken by another user
             if (
                 User.objects.filter(student_id=student_id)
                 .exclude(pk=self.instance.pk)
                 .exists()
             ):
-                raise ValidationError("This Student/Employee ID is already registered.")
+                raise ValidationError("This Student is already registered.")
         return student_id
 
     def clean_series(self):
@@ -154,6 +187,7 @@ class AvatarUpdateForm(forms.ModelForm):
                     "hx-trigger": "change",
                     "hx-target": "#avatar-preview",
                     "hx-swap": "outerHTML",
+                    "hx-headers": '{"X-CSRFToken": "{{ csrf_token }}"}',
                 }
             )
         }
@@ -161,12 +195,28 @@ class AvatarUpdateForm(forms.ModelForm):
     def clean_avatar(self):
         avatar = self.cleaned_data.get("avatar")
         if avatar:
+            # Check file size (5MB limit)
             if avatar.size > 5 * 1024 * 1024:
                 raise ValidationError("Image file too large. Maximum size is 5MB.")
 
+            # Check file type
             if not avatar.content_type.startswith("image/"):
                 raise ValidationError("Please upload a valid image file.")
 
+            # Validate image dimensions to prevent extremely large images
+            try:
+                from PIL import Image
+
+                with Image.open(avatar) as img:
+                    if img.width > 4096 or img.height > 4096:
+                        raise ValidationError(
+                            "Image dimensions too large. Maximum size is 4096x4096 pixels."
+                        )
+            except Exception:
+                # If PIL fails, still allow the upload but log the issue
+                pass
+
+            # Generate safe filename
             user = self.instance.user if hasattr(self.instance, "user") else None
             if user:
                 username = slugify(user.username)
@@ -180,19 +230,16 @@ class AvatarUpdateForm(forms.ModelForm):
         return avatar
 
 
-class ProfileUpdateForm(forms.ModelForm):
+class ProfileUpdateForm(DaisyUIFormMixin, forms.ModelForm):
     bio = forms.CharField(
         required=False,
-        widget=forms.Textarea(
-            attrs={"class": "form-textarea", "placeholder": "Tell us about yourself..."}
-        ),
+        widget=forms.Textarea(attrs={"placeholder": "Tell us about yourself..."}),
     )
 
     birth_date = forms.DateField(
         required=False,
         widget=forms.DateInput(
             attrs={
-                "class": "form-input",
                 "type": "date",
             }
         ),
@@ -202,7 +249,6 @@ class ProfileUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.URLInput(
             attrs={
-                "class": "form-input",
                 "placeholder": "https://facebook.com/username",
             }
         ),
@@ -211,29 +257,23 @@ class ProfileUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.URLInput(
             attrs={
-                "class": "form-input",
                 "placeholder": "https://linkedin.com/in/username",
             }
         ),
     )
     github_url = forms.URLField(
         required=False,
-        widget=forms.URLInput(
-            attrs={"class": "form-input", "placeholder": "https://github.com/username"}
-        ),
+        widget=forms.URLInput(attrs={"placeholder": "https://github.com/username"}),
     )
     twitter_url = forms.URLField(
         required=False,
-        widget=forms.URLInput(
-            attrs={"class": "form-input", "placeholder": "https://twitter.com/username"}
-        ),
+        widget=forms.URLInput(attrs={"placeholder": "https://twitter.com/username"}),
     )
 
     interests_text = forms.CharField(
         required=False,
         widget=forms.TextInput(
             attrs={
-                "class": "form-input",
                 "placeholder": "programming, robotics, AI (comma-separated)",
             }
         ),
@@ -242,7 +282,6 @@ class ProfileUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "class": "form-input",
                 "placeholder": "Python, Django, JavaScript (comma-separated)",
             }
         ),
@@ -252,24 +291,11 @@ class ProfileUpdateForm(forms.ModelForm):
         model = Profile
         fields = ["phone", "address", "birth_date", "show_email", "show_phone", "bio"]
         widgets = {
-            "phone": forms.TextInput(
-                attrs={"class": "form-input", "placeholder": "+880 1XXX-XXXXXX"}
-            ),
+            "phone": forms.TextInput(attrs={"placeholder": "+880 1XXX-XXXXXX"}),
             "address": forms.Textarea(
                 attrs={
-                    "class": "form-textarea",
                     "placeholder": "Your address...",
                     "rows": 3,
-                }
-            ),
-            "show_email": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
-            "show_phone": forms.CheckboxInput(attrs={"class": "form-checkbox"}),
-            "bio": forms.Textarea(
-                attrs={
-                    "class": "form-textarea",
-                    "placeholder": "Tell us about yourself...",
-                    "rows": 4,
-                    "maxlength": 500,
                 }
             ),
         }
@@ -308,7 +334,6 @@ class ProfileUpdateForm(forms.ModelForm):
     def save(self, commit=True):
         profile = super().save(commit=False)
 
-        # Handle birth_date from the form
         birth_date = self.cleaned_data.get("birth_date")
         if birth_date:
             profile.birth_date = birth_date
@@ -345,24 +370,18 @@ class ProfileUpdateForm(forms.ModelForm):
         return profile
 
 
-class PasswordChangeForm(forms.Form):
+class PasswordChangeForm(DaisyUIFormMixin, forms.Form):
     """Custom password change form with better validation"""
 
     current_password = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={"class": "form-input", "placeholder": "Current Password"}
-        )
+        widget=forms.PasswordInput(attrs={"placeholder": "Current Password"})
     )
     new_password1 = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={"class": "form-input", "placeholder": "New Password"}
-        ),
+        widget=forms.PasswordInput(attrs={"placeholder": "New Password"}),
         help_text="Password must be at least 8 characters long.",
     )
     new_password2 = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={"class": "form-input", "placeholder": "Confirm New Password"}
-        )
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirm New Password"})
     )
 
     def __init__(self, user, *args, **kwargs):

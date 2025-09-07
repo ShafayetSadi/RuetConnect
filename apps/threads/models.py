@@ -53,19 +53,37 @@ class Thread(BaseModel):
 
         if self._state.adding:
             counter = 1
-            while Thread.objects.filter(slug=slug_candidate).exists():
+            max_attempts = 100
+            while (
+                Thread.objects.filter(slug=slug_candidate).exists()
+                and counter <= max_attempts
+            ):
                 slug_candidate = f"{base_slug}-{counter}"
                 counter += 1
+            if counter > max_attempts:
+                # Fallback to UUID if we hit the limit
+                import uuid
+
+                slug_candidate = f"{base_slug}-{uuid.uuid4().hex[:8]}"
             self.slug = slug_candidate
         else:
             if Thread.objects.exclude(pk=self.pk).filter(slug=slug_candidate).exists():
                 counter = 1
                 slug_candidate = base_slug
+                max_attempts = 100
                 while (
-                    Thread.objects.exclude(pk=self.pk).filter(slug=slug_candidate).exists()
+                    Thread.objects.exclude(pk=self.pk)
+                    .filter(slug=slug_candidate)
+                    .exists()
+                    and counter <= max_attempts
                 ):
                     slug_candidate = f"{base_slug}-{counter}"
                     counter += 1
+                if counter > max_attempts:
+                    # Fallback to UUID if we hit the limit
+                    import uuid
+
+                    slug_candidate = f"{base_slug}-{uuid.uuid4().hex[:8]}"
                 self.slug = slug_candidate
 
         super().save(*args, **kwargs)
@@ -87,6 +105,7 @@ class ThreadMembership(BaseModel):
     ROLES = [
         ("member", "Member"),
         ("moderator", "Moderator"),
+        ("admin", "Admin"),
     ]
 
     STATUS_CHOICES = [

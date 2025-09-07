@@ -1,0 +1,16 @@
+{% extends 'account/profile_base.html' %}
+{% block profile_section %}
+<div class="space-y-4">
+  {% for post in downvoted_posts %}
+    {% include 'posts/post_card.html' with post=post %}
+  {% empty %}
+  <div class="card bg-base-200 border-base-300 border shadow-xl">
+    <div class="card-body text-center py-12">
+      <h3 class="text-lg font-semibold text-base-content/70 mb-2">No downvoted posts</h3>
+      <p class="text-base-content/50">{{ profile_user.get_display_name }} hasn't downvoted any posts yet.</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock profile_section %}
+{% block content %}{{ block.super }}{% endblock %}

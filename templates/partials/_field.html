@@ -1,0 +1,44 @@
+{% load widget_tweaks %}
+<div class="{{ helper.get_field_wrapper_class }}">
+    {% if show_label and field.label %}
+    <label class="{{ helper.get_label_class }}" for="{{ field.id_for_label }}">
+        <span class="{{ helper.get_label_text_class }}">
+            {{ field.label }}
+            {% if field.field.required %}
+            <span class="text-error ml-1">*</span>
+            {% endif %}
+        </span>
+    </label>
+    {% endif %}
+
+    <!-- Render the actual form field with error styling -->
+    {% if field.errors %}
+        {{ field|add_class:"input-error border-error" }}
+    {% else %}
+        {{ field }}
+    {% endif %}
+
+    <!-- Help text -->
+    {% if field.help_text %}
+    <div class="{{ helper.get_help_text_class }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {{ field.help_text }}
+    </div>
+    {% endif %}
+
+    <!-- Field errors -->
+    {% if field.errors %}
+    <div class="{{ helper.get_error_class }}">
+        {% for error in field.errors %}
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ error }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>

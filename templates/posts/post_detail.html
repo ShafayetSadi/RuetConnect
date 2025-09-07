@@ -1,33 +1,126 @@
-{% extends "base.html" %} {% block content %} {% load humanize %} {% load static %}
-<!-- Post -->
-{% include 'posts/post_card.html' %}
+{% extends "base.html" %}
+{% block content %}
+{% load humanize %}
+{% load static %}
 
-<!-- Comment Form -->
-<div class="card bg-base-100 shadow-md">
-    <div class="card-body">
-        <h3 class="card-title mb-4 text-lg">Add a Comment</h3>
-        {% include 'comments/comment_form.html' %} {% if form.errors %}
-        <div class="alert alert-error mt-4">
-            <ul class="list-inside list-disc">
-                {% for field in form %} {% for error in field.errors %}
-                <li>{{ error }}</li>
-                {% endfor %} {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-    </div>
-</div>
-
-<!-- Comments List -->
-<div class="card bg-base-100 shadow-md">
-    <div class="card-body">
-        <h3 class="card-title mb-4 text-lg">Comments ({{ comments.count }})</h3>
-        <div class="space-y-4">
-            {% for comment in comments %} {% include 'comments/comment_card.html' %} {% empty %}
-            <div class="py-8 text-center">
-                <p class="text-base-content/60">No comments yet. Be the first to comment!</p>
+<div class="space-y-4">
+    <!-- Post -->
+    <div class="card bg-base-200 border-base-300 border shadow-xl">
+        <div class="card-body px-4 py-2">
+            <!-- Post Header -->
+            <div class="mb-2 flex items-center gap-2 text-sm">
+                <a href="{% url 'thread-detail' thread_name=post.thread.slug %}" class="flex items-center gap-2">
+                    <img class="w-8 rounded-full" src="{% static 'images/thread.jpg' %}" />
+                    <div>r/{{ post.thread.title }}</div>
+                </a>
+                <span class="opacity-60">•</span>
+                <span>Posted by</span>
+                <a class="link link-secondary ml-1" href="{% url 'user-detail' username=post.author.username %}">u/{{
+                    post.author.username }}</a>
+                <span class="text-base-content/60 ml-2">{{ post.created_at | naturaltime }}</span>
+                <span class="opacity-60">•</span>
+                <span class="badge badge-sm badge-outline">
+                    {% if post.visibility == 'thread' %}
+                    Thread Only
+                    {% elif post.visibility == 'organization' %}
+                    Org Members
+                    {% else %}
+                    Public
+                    {% endif %}
+                </span>
             </div>
+            <!-- Post Title & Content -->
+            <div class="block">
+                <h1 class="mb-4 text-2xl font-bold">{{ post.title }}</h1>
+                <div class="prose prose-sm max-w-none text-base-content whitespace-pre-wrap">{{ post.content }}</div>
+            </div>
+            <!-- Post Action Buttons -->
+            <div class="mt-4 flex flex-wrap items-center gap-4 text-sm">
+                <div>{% include 'campus/vote.html' %}</div>
+                <div class="flex items-center gap-1 text-base-content/60">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <span>{{ post.comments.count }} comments</span>
+                </div>
+                {% if post.author == user %}
+                <a href="{% url 'post-update' slug=post.slug %}" class="btn btn-sm btn-outline">
+                    <span>Update</span>
+                </a>
+                {% endif %}
+                <button onclick="openShareModal({{ post.id }})" class="btn btn-sm btn-outline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    <span>Share</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Include Share Modal -->
+        {% include 'partials/share_modal.html' %}
+    </div>
+
+    <!-- Visibility Info -->
+    <div class="card bg-base-200 border-base-300 border shadow-sm">
+        <div class="card-body p-4">
+            <div class="flex items-center gap-2 text-sm">
+                <span class="text-base-content/60">Visibility:</span>
+                <span class="badge badge-outline">
+                    {% if post.visibility == 'thread' %}
+                    Thread Members Only
+                    {% elif post.visibility == 'organization' %}
+                    Organization Members
+                    {% else %}
+                    Public
+                    {% endif %}
+                </span>
+                <span class="text-base-content/40">•</span>
+                <span class="text-base-content/60">
+                    {% if post.visibility == 'thread' %}
+                    Only members of this thread can see this post
+                    {% elif post.visibility == 'organization' %}
+                    All members of {% if post.thread.organization.name %}{{ post.thread.organization.name }}{% else %}Unknown Organization{% endif %} can see this post
+                    {% else %}
+                    Anyone can see this post
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comment Form -->
+    {% include 'comments/comment_form.html' %}
+    {% if form.errors %}
+    <div class="alert alert-error">
+        <ul class="list-inside list-disc">
+            {% for field in form %}
+                {% for error in field.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
             {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Comments List -->
+    <div class="card bg-base-200 border-base-300 border shadow-sm">
+        <div class="card-body p-4">
+            <h3 class="text-lg font-semibold mb-4">Comments ({{ comments.count }})</h3>
+            <div>
+                {% for comment in comments %}
+                    {% include 'comments/comment_card.html' %}
+                {% empty %}
+                <div class="py-8 text-center">
+                    <div class="text-base-content/40 mb-2">
+                        <svg class="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-base-content/60 text-sm">No comments yet. Be the first to comment!</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
@@ -36,54 +129,7 @@
 
 <!-- Right Sidebar -->
 {% block right_bar_content %}
-<h3 class="card-title mb-4 text-lg">About r/{{ post.thread.title }}</h3>
-
-{% if post.thread.description %}
-<p class="text-base-content/70 mb-4 text-sm">{{ post.thread.description }}</p>
-{% endif %}
-
-<div class="divider"></div>
-
-<!-- Stats -->
-<div class="stats stats-vertical">
-    <div class="stat">
-        <div class="stat-title">Members</div>
-        <div class="stat-value text-primary">1</div>
-    </div>
-    <div class="stat">
-        <div class="stat-title">Online</div>
-        <div class="stat-value text-secondary">1</div>
-    </div>
-    <div class="stat">
-        <div class="stat-title">Posts</div>
-        <div class="stat-value text-accent">{{ post.thread.posts.count }}</div>
-    </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- Rules -->
-<div class="mb-4">
-    <h4 class="mb-2 font-semibold">Rules</h4>
-    <ul class="text-base-content/70 list-inside list-disc space-y-1 text-sm">
-        <li>Be respectful</li>
-        <li>Stay on topic</li>
-        <li>No spam</li>
-    </ul>
-</div>
-
-<div class="divider"></div>
-
-<!-- Moderators -->
-<div>
-    <h4 class="mb-2 font-semibold">Moderators</h4>
-    <div class="flex items-center gap-2">
-        <div class="avatar">
-            <div class="h-6 w-6 rounded-full">
-                <img src="{% static 'images/thread.jpg' %}" alt="Moderator" />
-            </div>
-        </div>
-        <span class="text-sm">u/{{ post.thread.created_by.username }}</span>
-    </div>
-</div>
+{% with thread=post.thread %}
+{% include 'threads/_thread_sidebar.html' %}
+{% endwith %}
 {% endblock right_bar_content %}

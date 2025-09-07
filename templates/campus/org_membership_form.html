@@ -1,24 +1,165 @@
 {% extends 'base.html' %}
 {% load widget_tweaks %}
-{% block content %}
-<div class="card bg-base-200 border-base-300 border shadow max-w-lg mx-auto">
-  <div class="card-body">
-    <h1 class="text-2xl font-bold">Update Membership</h1>
-    <form method="post" class="mt-4 space-y-3">
-      {% csrf_token %}
-      <div>
-        <label class="label">Role</label>
-        {% render_field form.role class="select select-bordered w-full" %}
-      </div>
-      <div>
-        <label class="label">Status</label>
-        {% render_field form.status class="select select-bordered w-full" %}
-      </div>
-      <div class="pt-2 flex justify-end gap-2">
-        <a href="{% url 'org-members' slug=object.organization.slug %}" class="btn btn-ghost">Cancel</a>
-        <button class="btn btn-primary" type="submit">Save</button>
-      </div>
-    </form>
-  </div>
+
+{% block head %}
+<style>
+    /* Override the base template's main scroll restrictions for membership form page */
+    main {
+        overflow-y: auto !important;
+        height: auto !important;
+    }
+
+    body {
+        overflow: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block left_side_bar %}
+{% endblock %}
+
+{% block main %}
+<!-- Complete override - no base template structure -->
+<div class="w-full max-w-lg mb-8">
+    <div class="card bg-base-200 border-base-300 border shadow-xl">
+        <div class="card-body">
+            <!-- Header Section -->
+            <div class="text-center mb-6">
+                <div class="avatar placeholder mb-4">
+                    <div class="bg-primary text-primary-content rounded-full w-16">
+                        <span class="text-lg">{{ object.user.get_username|slice:":2"|upper }}</span>
+                    </div>
+                </div>
+                <h1 class="text-2xl font-bold text-primary">Update Membership</h1>
+                <p class="text-base-content/70 mt-2">
+                    Manage <strong>{{ object.user.get_username }}</strong>'s role and status in
+                    <strong>{{ object.organization.name }}</strong>
+                </p>
+            </div>
+
+            <!-- Current Info Card -->
+            <div class="bg-base-100 rounded-lg p-4 mb-6 border border-base-300">
+                <h3 class="font-semibold text-sm text-base-content/70 mb-3">Current Status</h3>
+                <div class="flex gap-2 justify-between items-center">
+                    <div class="flex gap-8">
+                        <div class="flex items-center gap-6">
+                            <span class="text-sm font-medium">Role:</span>
+                            {% if object.role == 'admin' %}
+                                <div class="badge badge-error badge-sm">Admin</div>
+                            {% elif object.role == 'moderator' %}
+                                <div class="badge badge-warning badge-sm">Moderator</div>
+                            {% else %}
+                                <div class="badge badge-ghost badge-sm">{{ object.get_role_display }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-medium">Status:</span>
+                            {% if object.status == 'active' %}
+                                <div class="badge badge-success badge-sm">Active</div>
+                            {% else %}
+                                <div class="badge badge-outline badge-sm">{{ object.get_status_display }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-xs text-base-content/50">
+                        Joined {{ object.created_at|date:"M d, Y" }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Role
+                        </span>
+                        <span class="label-text-alt">Choose the member's responsibilities</span>
+                    </label>
+                    {% render_field form.role class="select select-bordered w-full focus:select-primary" %}
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">
+                            <strong>Admin:</strong> Full organization control
+                            <br>
+                            <strong>Moderator:</strong> Content moderation
+                            <br>
+                            <strong>Member:</strong> Standard access
+                        </span>
+                    </label>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text font-semibold">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Status
+                        </span>
+                        <span class="label-text-alt">Member's current state</span>
+                    </label>
+                    {% render_field form.status class="select select-bordered w-full focus:select-primary" %}
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/60">
+                            Active members can participate in all organization activities
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3 pt-4">
+                    <a href="{% url 'org-members' slug=object.organization.slug %}"
+                       class="btn btn-ghost btn-block sm:btn-auto">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Cancel
+                    </a>
+                    <button class="btn btn-primary btn-block sm:btn-auto" type="submit">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+
+            <!-- Additional Actions -->
+            <div class="divider mt-6">Advanced Actions</div>
+            <div class="flex flex-col gap-2">
+                <button class="btn btn-error btn-outline btn-sm" onclick="remove_member_modal.showModal()">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Remove from Organization
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Remove Member Modal -->
+<dialog id="remove_member_modal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg text-error">Remove Member</h3>
+        <p class="py-4">
+            Are you sure you want to remove <strong>{{ object.user.get_username }}</strong> from
+            <strong>{{ object.organization.name }}</strong>? This action cannot be undone.
+        </p>
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn btn-ghost">Cancel</button>
+            </form>
+            <button class="btn btn-error">Remove Member</button>
+        </div>
+    </div>
+</dialog>
+{% endblock %}
+
+{% block right_side_bar %}
 {% endblock %}

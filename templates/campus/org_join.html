@@ -1,19 +1,146 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Join {{ organization.name }} - CampusConnect{% endblock %}
+
 {% block content %}
-<div class="card bg-base-200 border-base-300 border shadow max-w-xl mx-auto">
-  <div class="card-body">
-    <h1 class="text-2xl font-bold">Request to Join</h1>
-    <p class="opacity-80">You are requesting to join this organization. Your request will be reviewed by its moderators.</p>
-    <form method="post" class="mt-4">
-      {% csrf_token %}
-      <div class="alert alert-info">
-        Your role will be set to <strong>Member</strong> and status to <strong>Pending</strong>.
+<div class="container mx-auto max-w-4xl px-4">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Main Content -->
+    <div class="lg:col-span-2">
+      <!-- Organization Preview Card -->
+      <div class="card bg-gradient-to-br from-base-200 to-base-300 border-base-300 border shadow-xl mb-6 overflow-hidden">
+        <div class="card-body p-6">
+          <div class="flex items-center gap-6 mb-6">
+            {% if organization.logo %}
+            <div class="avatar">
+              <div class="w-20 h-20 rounded-2xl ring-2 ring-primary/20 ring-offset-2 ring-offset-base-200">
+                <img src="{{ organization.logo.url }}" alt="{{ organization.name }} logo" class="object-cover" />
+              </div>
+            </div>
+            {% else %}
+            <div class="avatar placeholder">
+              <div class="bg-gradient-to-br from-primary to-primary-focus text-primary-content rounded-2xl w-20 h-20 ring-2 ring-primary/20 ring-offset-2 ring-offset-base-200">
+                <span class="text-2xl font-bold">{{ organization.name|first|upper }}</span>
+              </div>
+            </div>
+            {% endif %}
+            <div class="flex-1">
+              <h2 class="text-2xl font-bold text-base-content mb-2">{{ organization.name }}</h2>
+              <div class="flex items-center gap-3 mb-2">
+                <div class="badge badge-primary badge-lg font-medium">{{ organization.get_org_type_display }}</div>
+                {% if organization.is_active %}
+                <div class="badge badge-success badge-outline">Active</div>
+                {% else %}
+                <div class="badge badge-error badge-outline">Inactive</div>
+                {% endif %}
+              </div>
+              <p class="text-base-content/70 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span class="font-medium">{{ organization.member_count }}</span> member{{ organization.member_count|pluralize }}
+              </p>
+            </div>
+          </div>
+
+          {% if organization.description %}
+          <div class="bg-base-100/50 rounded-xl p-4 border border-base-300/50 mb-4">
+            <div class="prose prose-sm max-w-none text-base-content/80">
+              <p class="mb-0 leading-relaxed">{{ organization.description|truncatewords:50 }}</p>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Organization Stats -->
+          <div class="grid grid-cols-3 gap-4 bg-base-100/30 rounded-xl p-4 border border-base-300/30">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-base-content">{{ organization.member_count }}</div>
+              <div class="text-xs text-base-content/70">Members</div>
+            </div>
+            <div class="text-center">
+              <div class="badge badge-outline badge-sm">{{ organization.get_org_type_display }}</div>
+              <div class="text-xs text-base-content/70 mt-1">Type</div>
+            </div>
+            <div class="text-center">
+              {% if organization.is_active %}
+              <div class="badge badge-success badge-sm">Active</div>
+              {% else %}
+              <div class="badge badge-error badge-sm">Inactive</div>
+              {% endif %}
+              <div class="text-xs text-base-content/70 mt-1">Status</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="pt-4 flex justify-end gap-2">
-        <a class="btn btn-ghost" href="{{ request.META.HTTP_REFERER|default:'/' }}">Cancel</a>
-        <button class="btn btn-primary" type="submit">Send Request</button>
+
+      <!-- Join Request Form -->
+      <div class="card bg-base-100 border-base-300 border shadow-lg">
+        <div class="card-body">
+          <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+            </svg>
+            Membership Request
+          </h3>
+
+          <form method="post" class="space-y-8">
+            {% csrf_token %}
+
+            <!-- Request Information -->
+            <div class="bg-base-200 rounded-lg p-6 border border-base-300">
+              <h4 class="font-semibold mb-6 text-base-content text-lg">Request Details</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="flex flex-col space-y-2">
+                  <span class="text-sm font-medium text-base-content/60 uppercase tracking-wide">Requested Role</span>
+                  <span class="text-lg font-semibold text-base-content">Member</span>
+                </div>
+                <div class="flex flex-col space-y-2">
+                  <span class="text-sm font-medium text-base-content/60 uppercase tracking-wide">Initial Status</span>
+                  <span class="badge badge-warning badge-lg font-medium">Pending Approval</span>
+                </div>
+                <div class="flex flex-col space-y-2 md:col-span-2">
+                  <span class="text-sm font-medium text-base-content/60 uppercase tracking-wide">Your Username</span>
+                  <span class="text-lg font-semibold text-primary">{{ user.username }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms and Information -->
+            <div class="alert alert-info">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <h4 class="font-medium">Before you proceed:</h4>
+                <ul class="text-sm mt-2 space-y-1">
+                  <li>• Your request will be reviewed by organization moderators</li>
+                  <li>• You'll be notified via email once your request is processed</li>
+                  <li>• As a member, you'll gain access to organization threads and activities</li>
+                  <li>• You can withdraw your request anytime before approval</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-base-300">
+              <a class="btn btn-ghost order-2 sm:order-1" href="{% url 'org-detail' slug=organization.slug %}">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Organization
+              </a>
+              <button class="btn btn-primary order-1 sm:order-2" type="submit">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                Send Join Request
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
 </div>
 {% endblock %}

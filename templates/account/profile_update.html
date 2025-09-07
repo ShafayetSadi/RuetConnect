@@ -1,8 +1,24 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
 
+{% block head %}
+<style>
+    /* Override the base template's main scroll restrictions for login page */
+    main {
+        overflow-y: auto !important;
+        height: auto !important;
+    }
+
+    body {
+        overflow: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block left_side_bar %}{% endblock left_side_bar %}
+{% block right_side_bar %}{% endblock right_side_bar %}
 {% block main %}
-<div class="container mx-auto px-4">
+<div class="w-full px-4 mx-auto max-w-7xl py-8">
     <h1 class="mb-8 text-center text-3xl font-bold">Update Profile</h1>
 
     <div class="grid gap-8 lg:grid-cols-2">
@@ -336,10 +352,7 @@
 
     <!-- Back to Profile Button -->
     <div class="mt-8 text-center">
-        <a href="{% url 'profile' %}" class="btn btn-ghost">Back to Profile</a>
+        <a href="{% url 'user-update' %}" class="btn btn-ghost">Back to Profile</a>
     </div>
 </div>
 {% endblock main %}
-
-{% block right_side_bar %}
-{% endblock right_side_bar %}

@@ -1,16 +1,64 @@
-<form action="{% url 'comment-create' slug=post.slug %}" method="post" class="space-y-4">
-    {% csrf_token %}
-    <div class="form-control">
-        <label for="comment" class="label">
-            <span class="label-text font-semibold">Comment</span>
-        </label>
-        <textarea
-            required
-            name="content"
-            id="comment"
-            class="textarea textarea-bordered h-24"
-            placeholder="Write your thoughts..."
-        ></textarea>
+<div class="card bg-base-200 border border-base-300 shadow-sm">
+    <div class="card-body p-4">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="avatar">
+                <div class="w-8 h-8 rounded-full">
+                    {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="rounded-full" />
+                    {% else %}
+                    <div class="bg-primary text-primary-content flex h-full w-full items-center justify-center rounded-full text-xs font-bold">
+                        {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <h3 class="font-medium text-base-content">Add a comment</h3>
+                <p class="text-sm text-base-content/70">Share your thoughts on this post</p>
+            </div>
+        </div>
+
+        <form action="{% url 'comment-create' slug=post.slug %}" method="post" class="space-y-4">
+            {% csrf_token %}
+            <div class="form-control">
+                <textarea
+                    required
+                    name="content"
+                    id="comment"
+                    class="textarea textarea-bordered w-full min-h-24 resize-none focus:textarea-primary transition-colors duration-200"
+                    placeholder="What are your thoughts? Share your insights, ask questions, or start a discussion..."
+                    rows="3"
+                ></textarea>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm text-base-content/60">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Markdown supported</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('comment').value = ''">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm gap-2">
+                        Comment
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</div>
+
+<script>
+// Auto-resize textarea
+document.getElementById('comment').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.max(96, this.scrollHeight) + 'px'; // 96px = h-24
+});
+</script>

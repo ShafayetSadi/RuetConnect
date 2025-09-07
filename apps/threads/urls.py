@@ -3,7 +3,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("create/", views.ThreadCreateView.as_view(), name="thread-create"),
+    path("create/", views.ThreadOrgSelectView.as_view(), name="thread-select-org"),
+    path("create/<slug:org_slug>/", views.ThreadCreateView.as_view(), name="thread-create"),
     path("<slug:thread_name>/", views.ThreadDetailView.as_view(), name="thread-detail"),
     path("<slug:thread_name>/join/", views.ThreadJoinView.as_view(), name="thread-join"),
     path(

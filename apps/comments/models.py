@@ -40,7 +40,13 @@ class Comment(BaseModel):
     def save(self, *args, **kwargs):
         if self.parent:
             self.level = self.parent.level + 1
-            self.path = f"{self.parent.path}/{self.parent.id}"
+            # Limit path length to prevent database field overflow
+            new_path = f"{self.parent.path}/{self.parent.id}"
+            if len(new_path) > 500:  # Max length of path field
+                # Truncate path if it gets too long
+                self.path = new_path[-500:]
+            else:
+                self.path = new_path
         else:
             self.level = 0
             self.path = ""

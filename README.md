@@ -9,6 +9,7 @@
 ## Vision
 
 To build a collaborative digital space where RUETians can:
+
 - Discuss ideas and activities,
 - Stay updated with club announcements,
 - Participate in event planning,
@@ -39,21 +40,9 @@ To build a collaborative digital space where RUETians can:
 
 ---
 
-## 📋 Todo
-
-- [ ] Slug URLs for posts
-- [ ] Pagination for threads
-- [ ] Notifications system
-- [ ] Direct messaging between users
-- [ ] Full-text search with filters
-- [ ] Role-based access (admins, moderators, members)
-- [ ] REST API for mobile app (future scope)
-
----
-
 ## 📁 Project Structure (Modular)
 
-```
+```text
 ruetconnect/
 ├── apps/
 │   ├── campus/         # Campus homepage and core pages

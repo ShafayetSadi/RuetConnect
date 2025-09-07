@@ -27,17 +27,83 @@
         [x-cloak] {
             display: none !important;
         }
+
+        .htmx-indicator {
+            display: none;
+        }
+
+        .htmx-request .htmx-indicator {
+            display: block;
+        }
+
+        .htmx-request.htmx-indicator {
+            display: block;
+        }
+
+        /* Ensure proper scrollbar styling */
+        .scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(156, 163, 175, 0.7) transparent;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.7);
+            border-radius: 4px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(107, 114, 128, 0.8);
+        }
+
+        /* Fix for mobile touch scrolling */
+        .scroll-container {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
+            scroll-behavior: auto;
+        }
+
+        /* Ensure containers take full height */
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+        /* Reduce scroll momentum and bounce */
+        .scroll-container {
+            scroll-snap-type: none;
+            -webkit-scroll-snap-type: none;
+            scroll-padding: 0;
+        }
+
+        /* Prevent elastic scroll on iOS */
+        @supports (-webkit-touch-callout: none) {
+            .scroll-container {
+                -webkit-overflow-scrolling: auto;
+                overflow-scrolling: auto;
+            }
+        }
     </style>
 </head>
 
-<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' class="bg-base-100 text-base-content flex min-h-screen flex-col">
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' class="bg-base-100 text-base-content flex min-h-screen max-h-screen flex-col overflow-hidden">
     {% include 'partials/header.html' %}
-    <main class="mt-24 flex flex-1 flex-col items-center px-2 sm:px-0">
-        <div id="search-results" class="w-full"></div>
+    <main class="mt-24 flex flex-1 flex-col items-center px-2 sm:px-0 h-[calc(100vh-6rem)] overflow-hidden">
+        {% block main %}
+        <div id="search-results" class="w-full relative h-0"></div>
 
-        <div class="container mx-auto flex h-[calc(100vh-4rem)] flex-col gap-4 px-4 lg:flex-row">
+        <div class="container mx-auto flex h-full flex-col gap-4 px-4 lg:flex-row overflow-hidden">
+            {% block left_side_bar %}
             <!-- Left Sidebar -->
-            <div class="overflow-y-auto lg:w-1/4">
+            <div id="left-sidebar" class="overflow-y-auto overflow-x-hidden lg:w-1/4 h-full scroll-container" data-target="main-content" style="max-height: 100%; scrollbar-width: thin;">
                 <div class="card bg-base-200 border-base-300 border shadow-xl">
                     <div class="card-body p-6">
                         <!--prettier-ignore-->
@@ -46,16 +112,19 @@
                         {% endblock left_bar_content %}
                     </div>
                 </div>
+                <!-- Add extra content to ensure scrollability -->
+                <div class="h-4"></div>
             </div>
-
-            {% block main %}
+            {% endblock left_side_bar %} {% block main_content %}
             <!-- Main Content -->
-            <div class="space-y-4 overflow-y-auto lg:w-2/4">{% block content %}{% endblock %}</div>
-            {% endblock main %}
-
-            {% block right_side_bar %}
+            <div id="main-content" class="space-y-4 overflow-y-auto overflow-x-hidden lg:w-2/4 h-full scroll-container" style="max-height: 100%; scrollbar-width: thin;">
+                {% block content %}{% endblock content %}
+                <!-- Add extra space to ensure scrollability -->
+                <div class="h-4"></div>
+            </div>
+            {% endblock main_content %} {% block right_side_bar %}
             <!-- Right Sidebar -->
-            <div class="mr-4 overflow-y-auto lg:w-1/4">
+            <div id="right-sidebar" class="mr-4 overflow-y-auto overflow-x-hidden lg:w-1/4 h-full scroll-container" data-target="main-content" style="max-height: 100%; scrollbar-width: thin;">
                 <div class="card bg-base-200 border-base-300 border shadow-xl">
                     <div class="card-body p-4">
                         <!--prettier-ignore-->
@@ -64,13 +133,277 @@
                         {% endblock right_bar_content %}
                     </div>
                 </div>
+                <!-- Add extra content to ensure scrollability -->
+                <div class="h-4"></div>
             </div>
             {% endblock right_side_bar %}
         </div>
+        {% endblock main %}
     </main>
     {% block scripts %}
     <script>
         // Your JavaScript code here
+
+        function clearSearch() {
+            // Clear the search input
+            const searchInput = document.querySelector('input[name="query"]');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+
+            // Clear the search results
+            const searchResults = document.getElementById('search-results');
+            if (searchResults) {
+                searchResults.innerHTML = '';
+            }
+        }
+
+        function searchFor(term) {
+            // Set the search input value
+            const searchInput = document.querySelector('input[name="query"]');
+            if (searchInput) {
+                searchInput.value = term;
+                // Trigger HTMX search
+                searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+
+        // Share Modal Functions
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999); // For mobile devices
+            navigator.clipboard.writeText(element.value).then(function() {
+                // Show success feedback
+                const button = element.nextElementSibling;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('btn-success');
+                button.classList.remove('btn-primary');
+
+                setTimeout(function() {
+                    button.textContent = originalText;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-primary');
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Could not copy text: ', err);
+                // Fallback for older browsers
+                document.execCommand('copy');
+            });
+        }
+
+        function openShareModal(postId) {
+            const modal = document.getElementById('share-modal-' + postId);
+            if (modal) {
+                modal.classList.add('modal-open');
+                // Prevent body scroll
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeShareModal(postId) {
+            const modal = document.getElementById('share-modal-' + postId);
+            if (modal) {
+                modal.classList.remove('modal-open');
+                // Restore body scroll
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal-backdrop')) {
+                const modal = event.target.closest('.modal');
+                if (modal) {
+                    modal.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const openModals = document.querySelectorAll('.modal.modal-open');
+                openModals.forEach(modal => {
+                    modal.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                });
+            }
+        });
+
+        // Comment Share Modal Functions
+        function openCommentShareModal(commentId) {
+            const modal = document.getElementById('comment-share-modal-' + commentId);
+            if (modal) {
+                modal.classList.add('modal-open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeCommentShareModal(commentId) {
+            const modal = document.getElementById('comment-share-modal-' + commentId);
+            if (modal) {
+                modal.classList.remove('modal-open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Auto-scroll to comment if URL has comment anchor
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.location.hash.startsWith('#comment-')) {
+                const commentId = window.location.hash.substring(9); // Remove '#comment-'
+                const commentElement = document.getElementById('comment-' + commentId);
+                if (commentElement) {
+                    setTimeout(() => {
+                        commentElement.scrollIntoView({ behavior: 'auto', block: 'center' });
+                        // Add highlight effect
+                        commentElement.classList.add('bg-primary/10', 'border-primary/30');
+                        setTimeout(() => {
+                            commentElement.classList.remove('bg-primary/10', 'border-primary/30');
+                        }, 3000);
+                    }, 100);
+                }
+            }
+
+            // Reddit-style scroll synchronization
+            initializeScrollSync();
+        });
+
+        function initializeScrollSync() {
+            const scrollContainers = document.querySelectorAll('.scroll-container');
+            const mainContent = document.getElementById('main-content');
+            const leftSidebar = document.getElementById('left-sidebar');
+            const rightSidebar = document.getElementById('right-sidebar');
+
+            if (!mainContent || !leftSidebar || !rightSidebar) return;
+
+            let isScrolling = false;
+            let scrollTimeout;
+
+            function isAtBottom(element) {
+                return Math.abs(element.scrollHeight - element.clientHeight - element.scrollTop) < 3;
+            }
+
+            function isAtTop(element) {
+                return element.scrollTop <= 3;
+            }
+
+            function handleSidebarScroll(sidebar, event) {
+                if (isScrolling) return;
+
+                const isAtBottomOfSidebar = isAtBottom(sidebar);
+                const isAtTopOfSidebar = isAtTop(sidebar);
+                const deltaY = event.deltaY;
+
+                // If trying to scroll down and at bottom of sidebar, scroll main content
+                if (deltaY > 0 && isAtBottomOfSidebar) {
+                    event.preventDefault();
+                    isScrolling = true;
+
+                    mainContent.scrollBy({
+                        top: deltaY,
+                        behavior: 'smooth'
+                    });
+
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        isScrolling = false;
+                    }, 100);
+                }
+                // If trying to scroll up and at top of sidebar, scroll main content
+                else if (deltaY < 0 && isAtTopOfSidebar) {
+                    event.preventDefault();
+                    isScrolling = true;
+
+                    mainContent.scrollBy({
+                        top: deltaY,
+                        behavior: 'auto'
+                    });
+
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        isScrolling = false;
+                    }, 100);
+                }
+            }
+
+            // Add wheel event listeners to sidebars
+            leftSidebar.addEventListener('wheel', function(event) {
+                handleSidebarScroll(leftSidebar, event);
+            }, { passive: false });
+
+            rightSidebar.addEventListener('wheel', function(event) {
+                handleSidebarScroll(rightSidebar, event);
+            }, { passive: false });
+
+            // Handle touch scrolling for mobile
+            let touchStartY = 0;
+            let lastTouchY = 0;
+
+            function handleTouchStart(event) {
+                touchStartY = event.touches[0].clientY;
+                lastTouchY = touchStartY;
+            }
+
+            function handleTouchMove(sidebar, event) {
+                if (isScrolling) return;
+
+                const currentTouchY = event.touches[0].clientY;
+                const deltaY = lastTouchY - currentTouchY;
+                lastTouchY = currentTouchY;
+
+                const isAtBottomOfSidebar = isAtBottom(sidebar);
+                const isAtTopOfSidebar = isAtTop(sidebar);
+
+                // If trying to scroll down and at bottom of sidebar
+                if (deltaY > 0 && isAtBottomOfSidebar) {
+                    event.preventDefault();
+                    isScrolling = true;
+
+                    mainContent.scrollBy({
+                        top: deltaY * 2,
+                        behavior: 'auto'
+                    });
+
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        isScrolling = false;
+                    }, 150);
+                }
+                // If trying to scroll up and at top of sidebar
+                else if (deltaY < 0 && isAtTopOfSidebar) {
+                    event.preventDefault();
+                    isScrolling = true;
+
+                    mainContent.scrollBy({
+                        top: deltaY * 2,
+                        behavior: 'auto'
+                    });
+
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        isScrolling = false;
+                    }, 150);
+                }
+            }
+
+            // Add touch event listeners
+            leftSidebar.addEventListener('touchstart', handleTouchStart, { passive: false });
+            leftSidebar.addEventListener('touchmove', function(event) {
+                handleTouchMove(leftSidebar, event);
+            }, { passive: false });
+
+            rightSidebar.addEventListener('touchstart', handleTouchStart, { passive: false });
+            rightSidebar.addEventListener('touchmove', function(event) {
+                handleTouchMove(rightSidebar, event);
+            }, { passive: false });
+
+            document.querySelectorAll('.scroll-container').forEach(container => {
+                container.style.scrollBehavior = 'auto';
+            });
+        }
     </script>
     {% endblock %}
 </body>

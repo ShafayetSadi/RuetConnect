@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views.generic import CreateView
+from django.shortcuts import get_object_or_404
 
 from apps.posts.models import Post
 
@@ -15,7 +16,14 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.post = Post.objects.get(slug=self.kwargs["slug"])
+        post = get_object_or_404(Post, slug=self.kwargs["slug"])
+        form.instance.post = post
+        parent_id = self.request.POST.get("parent_id")
+        if parent_id:
+            try:
+                form.instance.parent = Comment.objects.get(pk=int(parent_id), post=post)
+            except (ValueError, Comment.DoesNotExist):
+                pass
         return super().form_valid(form)
 
     def form_invalid(self, form):

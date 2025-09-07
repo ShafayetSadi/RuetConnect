@@ -119,6 +119,7 @@ USE_TZ = True
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
@@ -150,6 +151,7 @@ ACCOUNT_SIGNUP_FIELDS = [
 
 ACCOUNT_FORMS = {
     "signup": "apps.accounts.forms.CustomSignupForm",
+    "login": "apps.accounts.forms.CustomLoginForm",
 }
 
 ACCOUNT_RATE_LIMITS = {

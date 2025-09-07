@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    /* Override the base template's main scroll restrictions for thread select page */
+    main {
+        overflow-y: auto !important;
+        height: auto !important;
+    }
+
+    body {
+        overflow: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block left_side_bar %}
+{% endblock %}
+
+{% block main %}
+<!-- Complete override - no base template structure -->
+<div class="w-full max-w-2xl mb-8">
+    <div class="card bg-base-200 border-base-300 border shadow-xl">
+        <div class="card-body">
+            <!-- Header Section -->
+            <div class="text-center mb-8">
+                <div class="flex justify-center mb-4">
+                    <div class="bg-primary/10 p-4 rounded-full">
+                        <svg class="w-12 h-12 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h1 class="text-3xl font-bold text-primary mb-2">Create a New Thread</h1>
+                <p class="text-base-content/70">
+                    Choose an organization to host your discussion thread. Each thread belongs to a specific organization and follows their community guidelines.
+                </p>
+            </div>
+
+            <!-- Organization Selection Form -->
+            <form method="get" action="" class="space-y-6">
+                <div class="form-control">
+                    <label for="org" class="label">
+                        <span class="label-text font-semibold text-lg">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            Select Organization
+                        </span>
+                        <span class="label-text-alt">Required • Choose where to post your thread</span>
+                    </label>
+
+                    {% if organizations %}
+                        <select id="org" name="org_slug" class="select select-bordered select-lg w-full focus:select-primary" required>
+                            <option disabled selected>Choose an organization...</option>
+                            {% for org in organizations %}
+                            <option value="{{ org.slug }}" data-name="{{ org.name }}" data-description="{{ org.description|default:'No description available' }}">
+                                {{ org.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.083 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                            <div>
+                                <h3 class="font-bold">No Organizations Available</h3>
+                                <div class="text-xs">You need to join at least one organization to create threads.</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Organization Preview Card -->
+                <div id="org-preview" class="hidden bg-base-100 rounded-lg p-6 border border-base-300">
+                    <div class="flex items-start space-x-4">
+                        <div class="avatar placeholder">
+                            <div class="bg-primary text-primary-content rounded-lg w-16">
+                                <span class="text-lg font-bold" id="org-initials">OR</span>
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-lg text-primary mb-1" id="org-name">Organization Name</h3>
+                            <p class="text-sm text-base-content/70 mb-3" id="org-description">Organization description will appear here...</p>
+                            <div class="flex flex-wrap gap-2">
+                                <div class="badge badge-outline badge-sm">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Member
+                                </div>
+                                <div class="badge badge-ghost badge-sm">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                    </svg>
+                                    Threads Allowed
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-3 pt-4">
+                    <a href="{% url 'campus-home' %}" class="btn btn-ghost btn-block sm:btn-auto">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Cancel
+                    </a>
+                    <button id="continue-btn" type="button" class="btn btn-primary btn-block sm:btn-auto" disabled>
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                        Continue to Create Thread
+                    </button>
+                </div>
+            </form>
+
+            <!-- Information Section -->
+            <div class="divider mt-8">Thread Guidelines</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div class="flex items-start space-x-3">
+                    <div class="bg-success/20 p-2 rounded-lg">
+                        <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-success mb-1">Stay On Topic</h4>
+                        <p class="text-base-content/70">Keep discussions relevant to the organization's purpose</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3">
+                    <div class="bg-info/20 p-2 rounded-lg">
+                        <svg class="w-4 h-4 text-info" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-info mb-1">Be Respectful</h4>
+                        <p class="text-base-content/70">Follow community guidelines and be courteous</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3">
+                    <div class="bg-warning/20 p-2 rounded-lg">
+                        <svg class="w-4 h-4 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-warning mb-1">Clear Titles</h4>
+                        <p class="text-base-content/70">Use descriptive titles that summarize your thread</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3">
+                    <div class="bg-secondary/20 p-2 rounded-lg">
+                        <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-secondary mb-1">Engage Positively</h4>
+                        <p class="text-base-content/70">Encourage meaningful discussions and responses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const orgSelect = document.getElementById('org');
+    const continueBtn = document.getElementById('continue-btn');
+    const orgPreview = document.getElementById('org-preview');
+    const orgName = document.getElementById('org-name');
+    const orgDescription = document.getElementById('org-description');
+    const orgInitials = document.getElementById('org-initials');
+
+    if (orgSelect) {
+        orgSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+
+            if (selectedOption.value && selectedOption.value !== '') {
+                // Enable continue button
+                continueBtn.disabled = false;
+                continueBtn.classList.remove('btn-disabled');
+
+                // Show and update preview card
+                const name = selectedOption.dataset.name || selectedOption.text;
+                const description = selectedOption.dataset.description || 'No description available';
+                const initials = name.split(' ').map(word => word[0]).join('').substring(0, 2).toUpperCase();
+
+                orgName.textContent = name;
+                orgDescription.textContent = description;
+                orgInitials.textContent = initials;
+
+                orgPreview.classList.remove('hidden');
+                orgPreview.classList.add('animate-fade-in');
+            } else {
+                // Disable continue button and hide preview
+                continueBtn.disabled = true;
+                continueBtn.classList.add('btn-disabled');
+                orgPreview.classList.add('hidden');
+            }
+        });
+
+        // Continue button click handler
+        continueBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const slug = orgSelect.value;
+            if (slug && slug !== '') {
+                // Add loading state
+                this.disabled = true;
+                this.innerHTML = `
+                    <span class="loading loading-spinner loading-sm mr-2"></span>
+                    Creating...
+                `;
+
+                // Redirect to thread creation
+                window.location.href = '/r/create/' + slug + '/';
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+{% endblock %}
+
+{% block right_side_bar %}
+{% endblock %}

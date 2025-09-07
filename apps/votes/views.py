@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.http import JsonResponse, Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 
 from apps.comments.models import Comment
@@ -28,7 +28,7 @@ def _get_model_and_ct(model_name: str):
 def vote(request):
     model_name = request.POST.get("model")
     object_id = request.POST.get("object_id")
-    action = request.POST.get("action")  # 'up', 'down', 'clear'
+    action = request.POST.get("action")  # 'up', 'down'
 
     if not (model_name and object_id and action):
         return JsonResponse({"error": "Invalid parameters"}, status=400)
@@ -59,14 +59,7 @@ def vote(request):
         if hasattr(target, "downvotes"):
             target.downvotes += 1
 
-    if action == "clear":
-        if previous:
-            if previous.vote_type == 1:
-                dec_up()
-            elif previous.vote_type == -1:
-                dec_down()
-            previous.delete()
-    elif action in {"up", "down"}:
+    if action in {"up", "down"}:
         new_value = 1 if action == "up" else -1
         if not previous:
             Vote.objects.create(
@@ -78,7 +71,7 @@ def vote(request):
                 inc_down()
         else:
             if previous.vote_type == new_value:
-                # toggle off
+                # toggle off - remove the vote
                 if new_value == 1:
                     dec_up()
                 else:
@@ -101,14 +94,8 @@ def vote(request):
         f for f in ["upvotes", "downvotes", "updated_at"] if hasattr(target, f)
     ])
 
-    payload = {
-        "upvotes": getattr(target, "upvotes", None),
-        "downvotes": getattr(target, "downvotes", None),
-        "score": getattr(target, "upvotes", 0) - getattr(target, "downvotes", 0),
-        "object_id": pk,
-        "model": model_name,
-    }
-    return JsonResponse(payload)
+    # Always redirect back to the page for consistent behavior
+    return redirect(request.POST.get("next") or request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required

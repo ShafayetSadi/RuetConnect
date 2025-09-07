@@ -1,18 +1,257 @@
 {% extends 'base.html' %}
+
+{% block right_bar_content %}
+<div>
+  <h3 class="text-base-content/70 text-xl font-thin">Organization Stats</h3>
+  <div class="mt-2 grid grid-cols-1 gap-3">
+    <div class="card bg-base-200 border border-base-300">
+      <div class="card-body p-4">
+        <div class="text-sm opacity-70">Members</div>
+        <div class="text-2xl font-semibold">{{ object.member_count }}</div>
+      </div>
+    </div>
+    <div class="card bg-base-200 border border-base-300">
+      <div class="card-body p-4">
+        <div class="text-sm opacity-70">Threads</div>
+        <div class="text-2xl font-semibold">{{ thread_count|default:0 }}</div>
+      </div>
+    </div>
+    {% if is_member %}
+    <div class="card bg-base-200 border border-base-300">
+      <div class="card-body p-4">
+        <div class="text-sm opacity-70">Posts</div>
+        <div class="text-2xl font-semibold">{{ post_count|default:0 }}</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <h3 class="text-base-content/70 mt-6 text-xl font-thin">Committee</h3>
+  <ul class="bg-base-100 border-base-300 my-2 rounded-xl border divide-y divide-base-300">
+    {% for m in committee_memberships %}
+    <li class="px-4 py-2 text-sm">{{ m.user.username }} — {{ m.get_role_display }}</li>
+    {% empty %}
+    <li class="px-4 py-2 text-base-content/60">No committee members.</li>
+    {% endfor %}
+  </ul>
+
+  <h3 class="text-base-content/70 mt-4 text-xl font-thin">Admins</h3>
+  <ul class="bg-base-100 border-base-300 my-2 rounded-xl border divide-y divide-base-300">
+    {% for m in admin_memberships %}
+    <li class="px-4 py-2 text-sm">{{ m.user.username }}</li>
+    {% empty %}
+    <li class="px-4 py-2 text-base-content/60">No admins.</li>
+    {% endfor %}
+  </ul>
+
+  <h3 class="text-base-content/70 mt-4 text-xl font-thin">Moderators</h3>
+  <ul class="bg-base-100 border-base-300 my-2 rounded-xl border divide-y divide-base-300">
+    {% for m in moderator_memberships %}
+    <li class="px-4 py-2 text-sm">{{ m.user.username }}</li>
+    {% empty %}
+    <li class="px-4 py-2 text-base-content/60">No moderators.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock right_bar_content %}
+
 {% block content %}
-<div class="card bg-base-200 border-base-300 border shadow">
-  <div class="card-body">
-    <h1 class="text-3xl font-bold">{{ object.name }}</h1>
-    <div class="text-sm text-base-content/70">{{ object.get_org_type_display }}</div>
-    <p class="mt-2">{{ object.description }}</p>
-    <div class="mt-4 flex gap-2">
+<div class="card bg-base-200 border-base-300 border shadow-xl overflow-hidden">
+  <div class="card-body flex flex-col md:flex-row items-start md:items-center gap-6">
+    <div class="flex-1">
+      <h1 class="text-3xl font-bold mb-1">{{ object.name }}</h1>
+      <div class="text-sm text-base-content/70 mb-2">{{ object.get_org_type_display }}</div>
+      <p class="mb-2">{{ object.description }}</p>
+    </div>
+    <div class="flex gap-2 mt-4 md:mt-0">
       {% if can_join %}
       <a href="{% url 'org-join' slug=object.slug %}" class="btn btn-primary">Request to Join</a>
       {% endif %}
       {% if request.user.is_staff %}
-      <a href="{% url 'org-edit' slug=object.slug %}" class="btn">Edit</a>
+      <a href="{% url 'org-edit' slug=object.slug %}" class="btn btn-outline">Edit</a>
       {% endif %}
     </div>
   </div>
 </div>
-{% endblock %}
+
+<!-- Organization Management Dashboard (Staff Only) -->
+{% if is_staff %}
+<div class="card bg-base-100 border-base-300 border shadow-lg mt-6">
+  <div class="card-body p-0">
+    <div class="px-6 py-4 border-b border-base-300">
+      <h2 class="text-lg font-semibold flex items-center gap-2">
+        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        Management Dashboard
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+      <!-- Staff Management -->
+      <div class="space-y-3">
+        <h3 class="font-medium text-base-content/80 text-sm uppercase tracking-wide">Member Management</h3>
+        <div class="space-y-2">
+          <a href="{% url 'org-pending-requests' slug=object.slug %}" class="block p-3 rounded-lg border border-base-300 hover:bg-base-200 transition-colors">
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                {% if pending_requests_count > 0 %}
+                <span class="absolute -top-1 -right-1 bg-error text-error-content text-xs rounded-full px-1 min-w-[1rem] h-4 flex items-center justify-center">{{ pending_requests_count }}</span>
+                {% endif %}
+              </div>
+              <div class="mb-1">
+                <div class="font-medium">Pending Requests</div>
+                <div class="text-sm text-base-content/60 mb-4">{{ pending_requests_count }} pending</div>
+              </div>
+            </div>
+          </a>
+
+          <a href="{% url 'org-members' slug=object.slug %}" class="block p-3 rounded-lg border border-base-300 hover:bg-base-200 transition-colors">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
+              <div>
+                <div class="font-medium">Manage Members</div>
+                <div class="text-sm text-base-content/60">View and edit memberships</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Content Management -->
+      <div class="space-y-3">
+        <h3 class="font-medium text-base-content/80 text-sm uppercase tracking-wide">Content Management</h3>
+        <div class="space-y-2">
+          <a href="{% url 'thread-create' org_slug=object.slug %}" class="block p-3 rounded-lg border border-base-300 hover:bg-base-200 transition-colors">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <div>
+                <div class="font-medium">Create Thread</div>
+                <div class="text-sm text-base-content/60">Start a new discussion thread</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Organization Settings -->
+      <div class="space-y-3">
+        <h3 class="font-medium text-base-content/80 text-sm uppercase tracking-wide">Organization Settings</h3>
+        <div class="space-y-2">
+          <a href="{% url 'org-edit' slug=object.slug %}" class="block p-3 rounded-lg border border-base-300 hover:bg-base-200 transition-colors">
+            <div class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <div>
+                <div class="font-medium">Edit Organization</div>
+                <div class="text-sm text-base-content/60">Update details and settings</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Quick Navigation for Members -->
+{% if is_member and not is_staff %}
+<div class="card bg-base-100 border-base-300 border shadow-lg mt-6">
+  <div class="card-body p-4">
+    <div class="flex items-center justify-center">
+      <a href="{% url 'campus-home' %}" class="btn btn-outline btn-sm">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        Browse All Threads
+      </a>
+    </div>
+  </div>
+</div>
+{% endif %}<h2 class="mt-6 text-xl font-semibold">Threads in {{ object.name }}</h2>
+<div class="card bg-base-200 border-base-300 border shadow-xl mt-2">
+  <div class="card-body p-0">
+    <ul class="divide-y divide-base-300">
+      {% for thread in threads %}
+      <li>
+        <a href="{% url 'thread-detail' thread_name=thread.slug %}"
+           class="block p-4 transition-all duration-150 rounded-lg hover:bg-primary/10 hover:border-primary hover:shadow-md">
+          <div class="flex items-start gap-4">
+            <!-- Thread Image -->
+            <div class="flex-shrink-0">
+              {% if thread.image %}
+              <div class="w-16 h-16 rounded-lg overflow-hidden">
+                <img src="{{ thread.image.url }}" alt="{{ thread.title }}" class="w-full h-full object-cover" />
+              </div>
+              {% else %}
+              <div class="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center">
+                <svg class="w-8 h-8 text-primary/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Thread Content -->
+            <div class="flex-1 min-w-0">
+              <div class="font-medium text-lg">r/{{ thread.title }}</div>
+              {% if thread.description %}
+              <p class="text-sm opacity-70 mt-1 line-clamp-2">{{ thread.description }}</p>
+              {% endif %}
+              <div class="text-xs opacity-60 mt-1">{{ thread.post_count }} posts</div>
+            </div>
+          </div>
+        </a>
+      </li>
+      {% empty %}
+      <li class="p-4 text-base-content/60">No threads yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+  </div>
+
+{% if is_member %}
+<div class="sticky top-0 z-10 -mt-2 mb-4 bg-base-100/80 backdrop-blur mt-6">
+  <div class="flex items-center gap-2 text-sm opacity-70">
+    <span>Sort by:</span>
+    <a href="?tab=popular" class="badge {% if active_tab == 'popular' %}badge-primary{% else %}badge-ghost{% endif %}">Popular</a>
+    <a href="?tab=latest" class="badge {% if active_tab == 'latest' %}badge-primary{% else %}badge-ghost{% endif %}">Latest</a>
+  </div>
+  <div class="mt-2"></div>
+  <hr class="border-base-300" />
+</div>
+
+{% for post in posts %}
+  {% include 'posts/post_card.html' %}
+{% empty %}
+<div class="card bg-base-200 border-base-300 border shadow-xl">
+  <div class="card-body">
+    <p class="text-base-content/60 text-center">No posts yet.</p>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="card bg-base-200 border-base-300 border shadow-xl mt-6">
+  <div class="card-body">
+    <div class="text-center">
+      <h3 class="text-lg font-semibold mb-2">Member-Only Content</h3>
+      <p class="text-base-content/60 mb-4">Posts from this organization are only visible to active members.</p>
+      {% if can_join %}
+      <a href="{% url 'org-join' slug=object.slug %}" class="btn btn-primary">Request to Join</a>
+      {% elif not request.user.is_authenticated %}
+      <a href="{% url 'account_login' %}" class="btn btn-primary">Login to Join</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock content %}

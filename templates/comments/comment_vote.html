@@ -1,17 +1,20 @@
+{% load vote_tags %}
+{% user_vote comment as my_vote %}
 <div class="flex items-center gap-1">
-    <form method="post" action="{% url 'vote' %}" hx-post="{% url 'vote' %}" hx-swap="none">
+    <form method="post" action="{% url 'vote' %}">
         {% csrf_token %}
         <input type="hidden" name="model" value="comment" />
         <input type="hidden" name="object_id" value="{{ comment.id }}" />
         <input type="hidden" name="action" value="up" />
-        <button type="submit" class="btn btn-ghost btn-xs p-1">
+        <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+        <button type="submit" class="btn btn-ghost btn-xs p-1 {% if my_vote == 1 %}bg-base-200{% endif %}">
             <svg
                 height="16"
                 viewBox="0 0 24 24"
                 width="16"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
-                class="text-success"
+                class="{% if my_vote == 1 %}text-success{% else %}text-base-content/60{% endif %}"
             >
                 <path
                     d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601 17.919 12H15z"
@@ -22,19 +25,20 @@
 
     <div class="min-w-[1rem] text-center text-xs font-medium">{{ comment.score }}</div>
 
-    <form method="post" action="{% url 'vote' %}" hx-post="{% url 'vote' %}" hx-swap="none">
+    <form method="post" action="{% url 'vote' %}">
         {% csrf_token %}
         <input type="hidden" name="model" value="comment" />
         <input type="hidden" name="object_id" value="{{ comment.id }}" />
         <input type="hidden" name="action" value="down" />
-        <button type="submit" class="btn btn-ghost btn-xs p-1">
+        <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+        <button type="submit" class="btn btn-ghost btn-xs p-1 {% if my_vote == -1 %}bg-base-200{% endif %}">
             <svg
                 height="16"
                 viewBox="0 0 24 24"
                 width="16"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
-                class="text-error"
+                class="{% if my_vote == -1 %}text-error{% else %}text-base-content/60{% endif %}"
             >
                 <path
                     d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059zM12 19.399 6.081 12H10V4h4v8h3.919L12 19.399z"
